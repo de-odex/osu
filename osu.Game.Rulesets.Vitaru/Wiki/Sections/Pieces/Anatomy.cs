@@ -110,21 +110,25 @@ namespace osu.Game.Rulesets.Vitaru.Wiki.Sections.Pieces
                         hitbox.BorderColour = Color4.Blue;
                         edgeEffectParameters.Colour = Color4.Blue.Opacity(0.5f);
                         break;
+                        /*
                     case Characters.TenshiHinanai:
                         characterSprite.Colour = Color4.DarkBlue;
                         hitbox.BorderColour = Color4.DarkBlue;
                         edgeEffectParameters.Colour = Color4.DarkBlue.Opacity(0.5f);
                         break;
+                        */
                     case Characters.YukariYakumo:
                         characterSprite.Colour = Color4.LightBlue;
                         hitbox.BorderColour = Color4.LightBlue;
                         edgeEffectParameters.Colour = Color4.LightBlue.Opacity(0.5f);
                         break;
+                        /*
                     case Characters.Chen:
                         characterSprite.Texture = VitaruRuleset.VitaruTextures.Get("chenKiai");
                         hitbox.BorderColour = Color4.Green;
                         edgeEffectParameters.Colour = Color4.Green.Opacity(0.5f);
                         break;
+                        */
                     case Characters.Kaguya:
                         characterSprite.Texture = VitaruRuleset.VitaruTextures.Get("kaguyaKiai");
                         hitbox.BorderColour = Color4.DarkRed;

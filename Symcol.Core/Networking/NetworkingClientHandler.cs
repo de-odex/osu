@@ -1,6 +1,4 @@
-﻿#define SoloTesting
-
-using osu.Framework.Graphics.Containers;
+﻿using osu.Framework.Graphics.Containers;
 using osu.Framework.Logging;
 using System;
 using System.Collections.Generic;
@@ -288,10 +286,8 @@ namespace Symcol.Core.Networking
                     }
                 }
 
-#if !SoloTesting
                 if (InMatchClients.Count == 0 && LoadedClients.Count > 0 && Loaded && !InGame)
                     SendStartGame();
-#endif
 
                 //Peers
                 else if (SendClient != null)
@@ -337,10 +333,8 @@ namespace Symcol.Core.Networking
                 }
             }
 
-#if SoloTesting
-            if (Loaded && !InGame)
+            if (ConncetedClients.Count == 0 && ConnectingClients.Count == 0 && Loaded && !InGame)
                 SendStartGame();
-#endif
 
             if (p != null)
                 OnPacketReceive?.Invoke(p);

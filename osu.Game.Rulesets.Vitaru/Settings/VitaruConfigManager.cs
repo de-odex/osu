@@ -34,7 +34,7 @@ namespace osu.Game.Rulesets.Vitaru.Settings
             Set(VitaruSetting.PlayerThree, Characters.FlandreScarlet);
             Set(VitaruSetting.PlayerFour, Characters.RemiliaScarlet);
             Set(VitaruSetting.PlayerFive, Characters.Cirno);
-            Set(VitaruSetting.PlayerSix, Characters.TenshiHinanai);
+            Set(VitaruSetting.PlayerSix, Characters.YuyukoSaigyouji);
             Set(VitaruSetting.PlayerSeven, Characters.YukariYakumo);
 
             Set(VitaruSetting.EnemyOne, Characters.MarisaKirisame);
@@ -42,9 +42,9 @@ namespace osu.Game.Rulesets.Vitaru.Settings
             Set(VitaruSetting.EnemyThree, Characters.FlandreScarlet);
             Set(VitaruSetting.EnemyFour, Characters.RemiliaScarlet);
             Set(VitaruSetting.EnemyFive, Characters.Cirno);
-            Set(VitaruSetting.EnemySix, Characters.TenshiHinanai);
+            Set(VitaruSetting.EnemySix, Characters.YuyukoSaigyouji);
             Set(VitaruSetting.EnemySeven, Characters.YukariYakumo);
-            Set(VitaruSetting.EnemyEight, Characters.Chen);
+            Set(VitaruSetting.EnemyEight, Characters.ByakurenHijiri);
 
             Set(VitaruSetting.VectorVideos, true);
             Set(VitaruSetting.Skin, "default");

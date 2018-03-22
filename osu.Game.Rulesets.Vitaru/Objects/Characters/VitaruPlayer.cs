@@ -222,9 +222,11 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Characters
                     energyRequired = 40;
                     CharacterColor = Color4.Blue;
                     break;
+                    /*
                 case Characters.TenshiHinanai:
                     CharacterColor = Color4.DarkBlue;
                     break;
+                    */
                 case Characters.YuyukoSaigyouji:
                     CharacterColor = Color4.LightBlue;
                     MaxHealth = 80;
@@ -239,6 +241,7 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Characters
                     MaxHealth = 80;
                     energyRequired = 4;
                     break;
+                    /*
                 case Characters.Chen:
                     CharacterColor = Color4.Green;
                     CharacterName = "chen";
@@ -249,6 +252,7 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Characters
                     energyRequiredPerSecond = 4;
                     energyRequired = 2;
                     break;
+                    */
                 case Characters.KokoroHatano:
                     CharacterColor = Color4.Cyan;
                     maxEnergy = 36;
@@ -630,10 +634,6 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Characters
                     yuyukoSpell();
                 else if (CurrentCharacter == Characters.YukariYakumo && action == VitaruAction.Spell)
                     yukariSpell();
-                else if (CurrentCharacter == Characters.Chen && action == VitaruAction.Spell)
-                {
-
-                }
                 else if (CurrentCharacter == Characters.IbarakiKasen && action == VitaruAction.Spell)
                     ibarakiSpell();
                 else if (CurrentCharacter == Characters.NueHoujuu && action == VitaruAction.Spell | action == VitaruAction.Spell2 | action == VitaruAction.Spell3 | action == VitaruAction.Spell4)
@@ -1882,30 +1882,30 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Characters
         RemiliaScarlet,
         [System.ComponentModel.Description("Cirno")]
         Cirno,
-        [System.ComponentModel.Description("Tenshi Hinanai")]
-        TenshiHinanai,
+        //[System.ComponentModel.Description("Tenshi Hinanai")]
+        //TenshiHinanai,
         [System.ComponentModel.Description("Yuyuko Saigyouji")]
         YuyukoSaigyouji,
         [System.ComponentModel.Description("Yukari Yakumo")]
         YukariYakumo,
-        [System.ComponentModel.Description("Ran Yakumo")]
-        RanYakumo,
-        [System.ComponentModel.Description("Chen")]
-        Chen,
-        [System.ComponentModel.Description("Alice Margatroid")]
-        AliceMargatroid,
-        [System.ComponentModel.Description("Komachi Onozuka")]
-        KomachiOnozuka,
+        //[System.ComponentModel.Description("Ran Yakumo")]
+        //RanYakumo,
+        //[System.ComponentModel.Description("Chen")]
+        //Chen,
+        //[System.ComponentModel.Description("Alice Margatroid")]
+        //AliceMargatroid,
+        //[System.ComponentModel.Description("Komachi Onozuka")]
+        //KomachiOnozuka,
         [System.ComponentModel.Description("Byakuren Hijiri")]
         ByakurenHijiri,
-        [System.ComponentModel.Description("Rumia")]
-        Rumia,
-        [System.ComponentModel.Description("Sikieiki Yamaxanadu")]
-        SikieikiYamaxanadu,
-        [System.ComponentModel.Description("Suwako Moriya")]
-        SuwakoMoriya,
-        [System.ComponentModel.Description("Youmu Konpaku")]
-        YoumuKonpaku,
+        //[System.ComponentModel.Description("Rumia")]
+        //Rumia,
+        //[System.ComponentModel.Description("Sikieiki Yamaxanadu")]
+        //SikieikiYamaxanadu,
+        //[System.ComponentModel.Description("Suwako Moriya")]
+        //SuwakoMoriya,
+        //[System.ComponentModel.Description("Youmu Konpaku")]
+        //YoumuKonpaku,
         [System.ComponentModel.Description("Kokoro Hatano")]
         KokoroHatano,
         [System.ComponentModel.Description("Kaguya")]
@@ -1914,10 +1914,10 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Characters
         IbarakiKasen,
         [System.ComponentModel.Description("Nue Houjuu")]
         NueHoujuu,
-        [System.ComponentModel.Description("Jorolf")]
-        Rock,
-        [System.ComponentModel.Description("mangomizer")]
-        Mango,
+        //[System.ComponentModel.Description("Jorolf")]
+        //Rock,
+        //[System.ComponentModel.Description("mangomizer")]
+        //Mango,
         [System.ComponentModel.Description("Alice Muyart")]
         AliceMuyart,
         [System.ComponentModel.Description("Arysa Muyart")]

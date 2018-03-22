@@ -360,6 +360,7 @@ namespace osu.Game.Rulesets.Vitaru.Wiki.Sections
                         "While that would explain her unatural abilities in combat they would not explain her uncanny abitlity to empithize with her \"creations\". " +
                         "The only other individual to supposedly be even relativly this old is cold and heartless (perhaps litterally).";
                         break;
+                        /*
                     case Characters.SikieikiYamaxanadu:
                         stats = "\nMax Health: 80" +
                         "\nMax Energy: 40" +
@@ -367,6 +368,7 @@ namespace osu.Game.Rulesets.Vitaru.Wiki.Sections
                         "\nDifficulty: ???" +
                         "\nAbility (2 stab, 4 per second of block, 6 swipe, 10 wipe): Judgement (Not Implemented)";
                         break;
+                        */
                     case Characters.KokoroHatano:
                         stats = "\nMax Health: 100" +
                         "\nMax Energy: 36" +
@@ -398,6 +400,7 @@ namespace osu.Game.Rulesets.Vitaru.Wiki.Sections
                         "\nDifficulty: Another" +
                         "\nSpell (Ratio [energy:damage/energy/health/weaken] - 1:4/2/1/2): Invasion (WIP)";
                         break;
+                        /*
                     case Characters.Rock:
                         stats = "\nMax Health: 20" +
                         "\nMax Energy: 0" +
@@ -405,6 +408,7 @@ namespace osu.Game.Rulesets.Vitaru.Wiki.Sections
                         "\nDifficulty: *More Silence*" +
                         "\nSpell (0 energy): Death by Stoning";
                         break;
+                        */
                     case Characters.AliceMuyart:
                         if (!VitaruAPIContainer.Shawdooow)
                         {

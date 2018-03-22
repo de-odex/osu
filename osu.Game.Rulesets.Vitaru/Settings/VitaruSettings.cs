@@ -1,5 +1,4 @@
-﻿using eden.Game.GamePieces;
-using OpenTK;
+﻿using OpenTK;
 using osu.Framework.Allocation;
 using osu.Framework.Configuration;
 using osu.Framework.Graphics;
@@ -16,6 +15,7 @@ using osu.Game.Rulesets.Vitaru.Wiki;
 using osu.Game.Rulesets.Vitaru.Scoring;
 using osu.Game.Rulesets.Vitaru.Edit;
 using Symcol.Rulesets.Core.Multiplayer.Screens;
+using eden.Game.GamePieces;
 
 namespace osu.Game.Rulesets.Vitaru.Settings
 {
