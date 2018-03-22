@@ -28,6 +28,7 @@ namespace osu.Game.Rulesets.Vitaru.Objects
         public int PatternTeam { get; set; }
         private int totalBullets;
         private bool shootPlayer;
+        private double beatLength;
         #endregion
 
         /// <summary>
@@ -76,6 +77,8 @@ namespace osu.Game.Rulesets.Vitaru.Objects
             double scoringDistance = base_scoring_distance * difficulty.SliderMultiplier * difficultyPoint.SpeedMultiplier;
 
             Velocity = scoringDistance / timingPoint.BeatLength;
+
+            beatLength = timingPoint.BeatLength;
 
             if (IsSlider)
                 EndTime = StartTime + this.SpanCount() * Curve.Distance / Velocity;
@@ -134,12 +137,10 @@ namespace osu.Game.Rulesets.Vitaru.Objects
 
                     foreach (Bullet b in bullets)
                     {
-                        if (IsSlider)
-                        {
-                            b.StartTime = StartTime + repeat * SpanDuration;
+                        b.StartTime = StartTime + repeat * SpanDuration;
+                        b.Position = Position + Curve.PositionAt(repeat % 2);
 
-                            b.Position = Position + Curve.PositionAt(repeat % 2);
-                        }
+                        b.BulletSpeed *= (float)Velocity * 2;
 
                         b.NewCombo = NewCombo;
                         b.Ar = Ar;
@@ -158,7 +159,8 @@ namespace osu.Game.Rulesets.Vitaru.Objects
 
                 foreach (Bullet b in bullets)
                 {
-                    b.NewCombo = NewCombo;
+                    b.BulletSpeed *= (float)Velocity * 2;
+
                     b.Ar = Ar;
                     b.Cs = Cs;
                     b.StackHeight = StackHeight;
@@ -195,17 +197,16 @@ namespace osu.Game.Rulesets.Vitaru.Objects
                     return patternWave(bulletDiameter);
                 case 2:
                     shootPlayer = true;
-                    return PatternLine(bulletDiameter);
+                    return patternLine(bulletDiameter);
                 case 3:
                     shootPlayer = true;
-                    return PatternTriangleWave(bulletDiameter);
+                    return patternTriangleWave(bulletDiameter);
                 case 4:
                     shootPlayer = false;
-                    return PatternCircle(bulletDiameter);
+                    return patternCircle(bulletDiameter);
                 case 5:
                     shootPlayer = true;
-                    //should be PatternSpin() once its fixed
-                    return patternWave(bulletDiameter);
+                    return patternFlower(bulletDiameter, Duration);
             }
         }
 
@@ -236,7 +237,7 @@ namespace osu.Game.Rulesets.Vitaru.Objects
             }
             return bullets;
         }
-        public List<Bullet> PatternLine(float diameter)
+        private List<Bullet> patternLine(float diameter)
         {
             List<Bullet> bullets = new List<Bullet>();
             int numberbullets = (int)PatternDifficulty + 1;
@@ -251,14 +252,14 @@ namespace osu.Game.Rulesets.Vitaru.Objects
                     BulletAngleRadian = patternAngleRadian,
                     BulletDiameter = diameter,
                     BulletDamage = PatternDamage,
-                    DynamicBulletVelocity = dynamicPatternVelocity,
+                    DynamicBulletVelocity = true,//dynamicPatternVelocity,
                     Team = 1,
                 });
                 speed += 0.14f;
             }
             return bullets;
         }
-        public List<Bullet> PatternTriangleWave(float diameter)
+        private List<Bullet> patternTriangleWave(float diameter)
         {
             List<Bullet> bullets = new List<Bullet>();
             int numberwaves = (int)(PatternDifficulty + 2) / 2;
@@ -289,7 +290,7 @@ namespace osu.Game.Rulesets.Vitaru.Objects
             }
             return bullets;
         }
-        public List<Bullet> PatternCircle(float diameter)
+        private List<Bullet> patternCircle(float diameter)
         {
             List<Bullet> bullets = new List<Bullet>();
             int numberbullets = (int)(PatternDifficulty * 4);
@@ -310,6 +311,32 @@ namespace osu.Game.Rulesets.Vitaru.Objects
                     DynamicBulletVelocity = dynamicPatternVelocity,
                     Team = 1,
                 });
+            }
+            return bullets;
+        }
+        private List<Bullet> patternFlower(float diameter, double duration, int arms = 4)
+        {
+            List<Bullet> bullets = new List<Bullet>();
+            int numberbullets = (int)(PatternDifficulty * 4);
+            double directionModifier = 0;
+            for (double j = StartTime; j <= StartTime + duration; j += beatLength / 2)
+            {
+                for (int i = 0; i <= arms; i++)
+                {
+                    bullets.Add(new Bullet
+                    {
+                        StartTime = j,
+                        Position = Position,
+                        BulletSpeed = PatternSpeed,
+                        BulletAngleRadian = directionModifier,
+                        BulletDiameter = diameter,
+                        BulletDamage = PatternDamage,
+                        DynamicBulletVelocity = dynamicPatternVelocity,
+                        Team = 1,
+                    });
+                    directionModifier += Math.PI / 2;
+                }
+                directionModifier += 0.3d;
             }
             return bullets;
         }

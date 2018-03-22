@@ -44,7 +44,7 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
                 this.pattern.EndTime = endTime;
             }
             else if (pattern.IsSlider)
-                endTime = this.pattern.EndTime += TIME_FADEOUT;
+                endTime = this.pattern.EndTime + TIME_FADEOUT;
         }
 
         protected override void LoadComplete()
@@ -267,19 +267,13 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
         {
             PlaySamples();
             foreach (var o in NestedHitObjects)
-            {
-                var b = (DrawableBullet)o;
-                if (b.Bullet.StartTime <= Time.Current)
+                if (o is DrawableBullet b && b.Bullet.StartTime <= Time.Current)
                 {
                     b.Position = Position;
-                    try
-                    {
-                        if (b.Bullet.ShootPlayer)
-                            b.Bullet.BulletAngleRadian += pattern.PlayerRelativePositionAngle(VitaruPlayfield.VitaruPlayer.Position, b.Position) - (float)Math.PI / 2;
-                    }
-                    catch { b.Bullet.BulletAngleRadian = 0; }
+
+                    if (b.Bullet.ShootPlayer)
+                        b.Bullet.BulletAngleRadian += pattern.PlayerRelativePositionAngle(VitaruPlayfield.VitaruPlayer.Position, b.Position) - Math.PI / 2;
                 }
-            }
         }
 
         /// <summary>

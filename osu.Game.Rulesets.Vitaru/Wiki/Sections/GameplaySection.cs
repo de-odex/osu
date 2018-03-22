@@ -256,7 +256,7 @@ namespace osu.Game.Rulesets.Vitaru.Wiki.Sections
                         "\nSpell (6 energy, 3 per second): Time-Warden";
 
                         if (selectedGamemode.Value == VitaruGamemode.Touhosu)
-                            stats = stats + "\n\nYoung Sakuya used to be kind and caring for all, like the ones who raised her. " +
+                            stats = stats + "\n\nYoung Sakuya used to be kind, caring, naive and most of all stubborn, like the ones who raised her. " +
                         "But even the purest of hearts can be broken given the right circumstances, corrupted by the dark things that lurk in the night. " +
                         "Physical wounds may heal, but the emotional stabbing she was subjected to can never be mended. " +
                         "Now she spends every ounce of willpower to keep to her schedule, everything must be timed perfectly.";
@@ -270,15 +270,15 @@ namespace osu.Game.Rulesets.Vitaru.Wiki.Sections
 
                         if (selectedGamemode.Value == VitaruGamemode.Touhosu && late)
                             stats = stats + "\n\nHong was your typical war hero. She fought valiantly, saved allies, showed no mercy against the enemy. " +
-                        "She didn't really care for all the medals or attention though, now that the war was over she just wanted to retire to her mansion.\n\n" +
+                        "She didn't really care for all the medals or attention though, now that the war was over she just wanted to retire home.\n\n" +
                         "Upon returning home she met with the Scarlet sisters she had entrusted the house with, ony to find they are different. " +
                         "They had wings, they grew wings? They were fairies now? " +
                         "No, Remilia was a vampire now, Flan is a Fairy." +
                         "Hong didn't mind as they were still dear friends and dispite having a track record of mishieve, the fact that the mansion was still standing was a testement to their capabilities.\n\n" +
-                        "Thats not all though, they also had a small child with them, she couldn't have been older than two or three years old. " +
+                        "Thats not all though, they also had a small child with them, she couldn't have been older than five or six years old. " +
                         "She had grey eyes and grey hair, they dressed her in Hong's old maid uniform, the blue one, and begun to teach her how to keep the place in order. " +
                         "Hong hadn't said a word yet, and didn't. " +
-                        "She went straight to her room and propmtly fell asleep on her bed, which was just as soft as when she left it.\n\n" +
+                        "She went straight to her room and propmtly fell asleep on her bed, which felt even softer than before she left.\n\n" +
                         "She awoke to the small child holding a tea set at her bed side. " +
                         "She stood straight as a pencil, proper maid edicate.\n\n" +
                         "Hong reached for one of the tea cups that had already been poured next to a note that read: \"Hope you still like 'Green Moon'. -Remilia\"\n" +

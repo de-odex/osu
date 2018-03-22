@@ -12,7 +12,7 @@
         public float BulletDamage { get; set; } = 10;
         public float BulletSpeed { get; set; } = 1f;
         public float BulletDiameter { get; set; } = 16f;
-        public float BulletAngleRadian { get; set; }
+        public double BulletAngleRadian { get; set; }
         public bool DynamicBulletVelocity { get; set; }
         // ReSharper disable once UnusedMember.Global
         public bool Piercing { get; set; } = false;

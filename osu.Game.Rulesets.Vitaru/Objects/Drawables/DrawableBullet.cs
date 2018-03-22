@@ -230,9 +230,8 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
 
         protected override void Dispose(bool isDisposing)
         {
+            BulletCount--;
             base.Dispose(isDisposing);
-            if(isDisposing)
-                BulletCount--;
         }
 
         private Vector2 getBulletVelocity()
@@ -260,6 +259,9 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
             if (Time.Current >= Bullet.StartTime)
             {
                 start();
+
+                if (Bullet.DynamicBulletVelocity)
+                    BulletVelocity = getBulletVelocity();
 
                 float frameTime = (float)Clock.ElapsedFrameTime;
                 this.MoveToOffset(new Vector2(BulletVelocity.X * BulletSpeedModifier * frameTime, BulletVelocity.Y * BulletSpeedModifier * frameTime));
