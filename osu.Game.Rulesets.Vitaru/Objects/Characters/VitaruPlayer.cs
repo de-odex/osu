@@ -114,7 +114,7 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Characters
         private double timeFreezeEndTime = double.MinValue;
         private double reFreezeTime = double.MaxValue;
         private float originalRate;
-        public float SetRate = 0.2f;
+        public float SetRate = 0.8f;
         private float currentRate = 1;
         private bool timeFreezeActive;
         private bool tabooActive;
@@ -1179,6 +1179,8 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Characters
                 BulletDamage = 20 * damageMultiplier,
                 ColorOverride = color,
                 Team = Team,
+                SliderType = SliderType.Straight,
+                DummyMode = true,
                 Ghost = CurrentCharacter == Characters.YuyukoSaigyouji | CurrentCharacter == Characters.AliceMuyart
             }, VitaruPlayfield));
 

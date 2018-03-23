@@ -26,9 +26,6 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
         //Playfield size + Margin of 10 on each side
         public Vector4 BulletBounds = new Vector4(-10, -10, 520, 830);
 
-        //Result of bulletSpeed + bulletAngle math, should never be modified outside of this class
-        public Vector2 BulletVelocity;
-
         //Set to "true" when a judgement should be returned
         private bool returnJudgement;
 
@@ -186,12 +183,6 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
             base.Dispose(isDisposing);
         }
 
-        private Vector2 getBulletVelocity()
-        {
-            Vector2 velocity = new Vector2(Bullet.BulletSpeed * (float)Math.Cos(Bullet.BulletAngle), Bullet.BulletSpeed * (float)Math.Sin(Bullet.BulletAngle));
-            return velocity;
-        }
-
         protected override void Update()
         {
             base.Update();
@@ -204,11 +195,9 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
 
             if (Time.Current >= Bullet.StartTime)
             {
-                if (Bullet.DynamicBulletVelocity)
-                    BulletVelocity = getBulletVelocity();
+                double completionProgress = MathHelper.Clamp((Time.Current - Bullet.StartTime) / Bullet.Duration, 0, 1);
 
-                float frameTime = (float)Clock.ElapsedFrameTime;
-                Position += new Vector2(BulletVelocity.X * BulletSpeedModifier * frameTime, BulletVelocity.Y * BulletSpeedModifier * frameTime);
+                Position = Bullet.PositionAt(completionProgress);
 
                 if (Bullet.ObeyBoundries && Position.Y < BulletBounds.Y | Position.X < BulletBounds.X | Position.Y > BulletBounds.W | Position.X > BulletBounds.Z && !returnJudgement)
                     returnJudgement = true;
@@ -224,32 +213,32 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
             started = true;
             this.FadeInFromZero(100);
             this.ScaleTo(Vector2.One, 100);
-            BulletVelocity = getBulletVelocity();
         }
 
         protected override void UpdateCurrentState(ArmedState state)
         {
-            switch (state)
-            {
-                case ArmedState.Idle:
-                    this.Delay(HitObject.TimePreempt).FadeOut(500);
+            if (!Bullet.DummyMode)
+                switch (state)
+                {
+                    case ArmedState.Idle:
+                        this.Delay(HitObject.TimePreempt).FadeOut(500);
 
-                    Expire(true);
+                        Expire(true);
 
-                    // override lifetime end as FadeIn may have been changed externally, causing out expiration to be too early.
-                    LifetimeEnd = double.MaxValue;
-                    break;
-                case ArmedState.Miss:
-                    LifetimeEnd = Time.Current + HitObject.TimePreempt / 6;
-                    this.FadeOutFromOne(HitObject.TimePreempt / 6);
-                    Expire();
-                    break;
-                case ArmedState.Hit:
-                    LifetimeEnd = Time.Current + HitObject.TimePreempt / 6;
-                    this.FadeOutFromOne(HitObject.TimePreempt / 6);
-                    Expire();
-                    break;
-            }
+                        // override lifetime end as FadeIn may have been changed externally, causing out expiration to be too early.
+                        LifetimeEnd = double.MaxValue;
+                        break;
+                    case ArmedState.Miss:
+                        LifetimeEnd = Time.Current + HitObject.TimePreempt / 6;
+                        this.FadeOutFromOne(HitObject.TimePreempt / 6);
+                        Expire();
+                        break;
+                    case ArmedState.Hit:
+                        LifetimeEnd = Time.Current + HitObject.TimePreempt / 6;
+                        this.FadeOutFromOne(HitObject.TimePreempt / 6);
+                        Expire();
+                        break;
+                }
         }
     }
 }
