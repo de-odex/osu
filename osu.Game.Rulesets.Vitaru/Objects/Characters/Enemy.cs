@@ -18,10 +18,12 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Characters
         public static int EnemyCount;
         private readonly DrawablePattern drawablePattern;
 
-        public Enemy(Container parent, Pattern pattern, DrawablePattern drawablePattern) : base(parent)
+        public Enemy(VitaruPlayfield playfield, Pattern pattern, DrawablePattern drawablePattern) : base(playfield)
         {
             this.drawablePattern = drawablePattern;
+
             AlwaysPresent = true;
+
             CharacterName = "enemy";
             Team = 1;
             CharacterColor = drawablePattern.AccentColour;
@@ -38,9 +40,8 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Characters
 
         protected override void Dispose(bool isDisposing)
         {
+            EnemyCount--;
             base.Dispose(isDisposing);
-            if (isDisposing)
-                EnemyCount--;
         }
 
         protected override void MovementAnimations()
@@ -114,7 +115,6 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Characters
         public override void Death()
         {
             Dead = true;
-            drawablePattern.PrepPop();
             Hitbox.HitDetection = false;
         }
     }

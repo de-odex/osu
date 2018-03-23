@@ -9,17 +9,6 @@ namespace osu.Game.Rulesets.Vitaru.Tests
     [TestFixture]
     internal class TestCaseVitaruPlayer : OsuTestCase
     {
-        [BackgroundDependencyLoader]
-        private void load(RulesetStore rulesets)
-        {
-            Children = new Drawable[]
-            {
-                new VitaruPlayer(this, Characters.ReimuHakurei)
-                {
-                    Alpha = 1,
-                    AlwaysPresent = true,
-                }
-            };
-        }
+
     }
 }

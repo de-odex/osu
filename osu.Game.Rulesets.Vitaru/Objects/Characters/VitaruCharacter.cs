@@ -36,14 +36,11 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Characters
         public bool CanHeal = false;
         protected float LastX;
 
-        /// <summary>
-        /// Should be assigned to only in ctor, and is essential for hit detection
-        /// </summary>
-        public new readonly Container Parent;
+        protected readonly VitaruPlayfield VitaruPlayfield;
 
-        protected VitaruCharacter(Container parent)
+        protected VitaruCharacter(VitaruPlayfield vitaruPlayfield)
         {
-            Parent = parent;
+            VitaruPlayfield = vitaruPlayfield;
         }
 
         /// <summary>
@@ -116,7 +113,7 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Characters
             if (Health <= 0 && !Dead)
                 Death();
 
-            foreach (Drawable draw in Parent)
+            foreach (Drawable draw in VitaruPlayfield.BulletField)
             {
                 DrawableBullet bullet = draw as DrawableBullet;
                 if (bullet?.Hitbox != null)

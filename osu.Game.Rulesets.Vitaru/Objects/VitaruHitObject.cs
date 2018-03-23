@@ -10,7 +10,8 @@ namespace osu.Game.Rulesets.Vitaru.Objects
 {
     public abstract class VitaruHitObject : HitObject, IHasComboInformation
     {
-        public float BPM;
+        public double TimePreempt = 600;
+        public double TimeFadein = 400;
 
         public float Ar { get; set; } = -1;
 

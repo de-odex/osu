@@ -14,7 +14,7 @@ using osu.Game.Audio;
 
 namespace osu.Game.Rulesets.Vitaru.UI
 {
-    public class MirrorField : Playfield
+    public class MirrorField : VitaruPlayfield
     {
         private readonly VitaruGamemode currentGameMode = VitaruSettings.VitaruConfigManager.GetBindable<VitaruGamemode>(VitaruSetting.GameMode);
         private Characters currentCharacter = VitaruSettings.VitaruConfigManager.GetBindable<Characters>(VitaruSetting.Characters);
@@ -31,44 +31,23 @@ namespace osu.Game.Rulesets.Vitaru.UI
         private readonly Characters enemySeven = VitaruSettings.VitaruConfigManager.GetBindable<Characters>(VitaruSetting.EnemySeven);
         private readonly Characters enemyEight = VitaruSettings.VitaruConfigManager.GetBindable<Characters>(VitaruSetting.EnemyEight);
 
-        private readonly Container gamePlayfield;
         private readonly List<VitaruPlayer> enemyList = new List<VitaruPlayer>();
 
-        //public override bool ProvidingUserCursor => false;
+        private readonly VitaruPlayfield vitaruPlayfield;
 
-        // ReSharper disable once InconsistentNaming
-        public static Vector2 BASE_SIZE = new Vector2(512, 820);
-
-        //TODO: Delete this
-        public override Vector2 Size
+        public MirrorField(VitaruPlayfield vitaruPlayfield) : base()
         {
-            get
-            {
-                var parentSize = Parent.DrawSize;
-                var aspectSize = parentSize.X * 0.75f < parentSize.Y ? new Vector2(parentSize.X, parentSize.X * 0.75f) : new Vector2(parentSize.Y * 5f / 8f, parentSize.Y);
-
-                return new Vector2(aspectSize.X / parentSize.X, aspectSize.Y / parentSize.Y) * base.Size;
-            }
+            this.vitaruPlayfield = vitaruPlayfield;
         }
 
-        public MirrorField() : base(BASE_SIZE.X)
+        protected override void LoadComplete()
         {
+            base.LoadComplete();
+
             Position = new Vector2(-40, 400);
             Anchor = Anchor.CentreLeft;
             Origin = Anchor.CentreLeft;
             Rotation = 180;
-
-            AddRange(new Drawable[]
-            {
-                gamePlayfield = new Container
-                {
-                    RelativeSizeAxes = Axes.Both
-                },
-                new Container
-                {
-                    RelativeSizeAxes = Axes.Both
-                }
-            });
 
             //Multiplayer testing :P
             if (multiplayer && currentGameMode != VitaruGamemode.Dodge)
@@ -78,73 +57,68 @@ namespace osu.Game.Rulesets.Vitaru.UI
                     case 0:
                         break;
                     case 1:
-                        enemyList.Add(new VitaruPlayer(gamePlayfield, enemyOne) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(512f / 2, 100), Auto = true, Bot = true, Team = 2 });
+                        enemyList.Add(new VitaruPlayer(this, enemyOne) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(512f / 2, 100), Auto = true, Bot = true, Team = 2 });
                         break;
                     case 2:
-                        enemyList.Add(new VitaruPlayer(gamePlayfield, enemyOne) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(512 - 200, 100), Auto = true, Bot = true, Team = 2 });
-                        enemyList.Add(new VitaruPlayer(gamePlayfield, enemyTwo) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(200, 100), Auto = true, Bot = true, Team = 2 });
+                        enemyList.Add(new VitaruPlayer(this, enemyOne) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(512 - 200, 100), Auto = true, Bot = true, Team = 2 });
+                        enemyList.Add(new VitaruPlayer(this, enemyTwo) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(200, 100), Auto = true, Bot = true, Team = 2 });
                         break;
                     case 3:
-                        enemyList.Add(new VitaruPlayer(gamePlayfield, enemyOne) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(0, 100), Auto = true, Bot = true, Team = 2 });
-                        enemyList.Add(new VitaruPlayer(gamePlayfield, enemyTwo) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(200, 100), Auto = true, Bot = true, Team = 2 });
-                        enemyList.Add(new VitaruPlayer(gamePlayfield, enemyThree) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(512f / 2, 100), Auto = true, Bot = true, Team = 2 });
+                        enemyList.Add(new VitaruPlayer(this, enemyOne) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(0, 100), Auto = true, Bot = true, Team = 2 });
+                        enemyList.Add(new VitaruPlayer(this, enemyTwo) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(200, 100), Auto = true, Bot = true, Team = 2 });
+                        enemyList.Add(new VitaruPlayer(this, enemyThree) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(512f / 2, 100), Auto = true, Bot = true, Team = 2 });
                         break;
                     case 4:
-                        enemyList.Add(new VitaruPlayer(gamePlayfield, enemyOne) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(0, 100), Auto = true, Bot = true, Team = 2 });
-                        enemyList.Add(new VitaruPlayer(gamePlayfield, enemyTwo) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(200, 100), Auto = true, Bot = true, Team = 2 });
-                        enemyList.Add(new VitaruPlayer(gamePlayfield, enemyThree) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(512 - 200, 100), Auto = true, Bot = true, Team = 2 });
-                        enemyList.Add(new VitaruPlayer(gamePlayfield, enemyFour) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(512, 100), Auto = true, Bot = true, Team = 2 });
+                        enemyList.Add(new VitaruPlayer(this, enemyOne) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(0, 100), Auto = true, Bot = true, Team = 2 });
+                        enemyList.Add(new VitaruPlayer(this, enemyTwo) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(200, 100), Auto = true, Bot = true, Team = 2 });
+                        enemyList.Add(new VitaruPlayer(this, enemyThree) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(512 - 200, 100), Auto = true, Bot = true, Team = 2 });
+                        enemyList.Add(new VitaruPlayer(this, enemyFour) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(512, 100), Auto = true, Bot = true, Team = 2 });
                         break;
                     case 5:
-                        enemyList.Add(new VitaruPlayer(gamePlayfield, enemyOne) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(0, 100), Auto = true, Bot = true, Team = 2 });
-                        enemyList.Add(new VitaruPlayer(gamePlayfield, enemyTwo) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(200, 100), Auto = true, Bot = true, Team = 2 });
-                        enemyList.Add(new VitaruPlayer(gamePlayfield, enemyThree) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(512f / 2, 100), Auto = true, Bot = true, Team = 2 });
-                        enemyList.Add(new VitaruPlayer(gamePlayfield, enemyFour) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(512 - 200, 100), Auto = true, Bot = true, Team = 2 });
-                        enemyList.Add(new VitaruPlayer(gamePlayfield, enemyFive) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(512, 100), Auto = true, Bot = true, Team = 2 });
+                        enemyList.Add(new VitaruPlayer(this, enemyOne) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(0, 100), Auto = true, Bot = true, Team = 2 });
+                        enemyList.Add(new VitaruPlayer(this, enemyTwo) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(200, 100), Auto = true, Bot = true, Team = 2 });
+                        enemyList.Add(new VitaruPlayer(this, enemyThree) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(512f / 2, 100), Auto = true, Bot = true, Team = 2 });
+                        enemyList.Add(new VitaruPlayer(this, enemyFour) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(512 - 200, 100), Auto = true, Bot = true, Team = 2 });
+                        enemyList.Add(new VitaruPlayer(this, enemyFive) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(512, 100), Auto = true, Bot = true, Team = 2 });
                         break;
                     case 6:
-                        enemyList.Add(new VitaruPlayer(gamePlayfield, enemyOne) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(0, 100), Auto = true, Bot = true, Team = 2 });
-                        enemyList.Add(new VitaruPlayer(gamePlayfield, enemyTwo) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(150, 100), Auto = true, Bot = true, Team = 2 });
-                        enemyList.Add(new VitaruPlayer(gamePlayfield, enemyThree) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(250, 100), Auto = true, Bot = true, Team = 2 });
-                        enemyList.Add(new VitaruPlayer(gamePlayfield, enemyFour) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(512 - 250, 100), Auto = true, Bot = true, Team = 2 });
-                        enemyList.Add(new VitaruPlayer(gamePlayfield, enemyFive) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(512 - 150, 100), Auto = true, Bot = true, Team = 2 });
-                        enemyList.Add(new VitaruPlayer(gamePlayfield, enemySix) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(512, 100), Auto = true, Bot = true, Team = 2 });
+                        enemyList.Add(new VitaruPlayer(this, enemyOne) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(0, 100), Auto = true, Bot = true, Team = 2 });
+                        enemyList.Add(new VitaruPlayer(this, enemyTwo) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(150, 100), Auto = true, Bot = true, Team = 2 });
+                        enemyList.Add(new VitaruPlayer(this, enemyThree) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(250, 100), Auto = true, Bot = true, Team = 2 });
+                        enemyList.Add(new VitaruPlayer(this, enemyFour) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(512 - 250, 100), Auto = true, Bot = true, Team = 2 });
+                        enemyList.Add(new VitaruPlayer(this, enemyFive) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(512 - 150, 100), Auto = true, Bot = true, Team = 2 });
+                        enemyList.Add(new VitaruPlayer(this, enemySix) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(512, 100), Auto = true, Bot = true, Team = 2 });
                         break;
                     case 7:
-                        enemyList.Add(new VitaruPlayer(gamePlayfield, enemyOne) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(0, 100), Auto = true, Bot = true, Team = 2 });
-                        enemyList.Add(new VitaruPlayer(gamePlayfield, enemyTwo) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(125, 100), Auto = true, Bot = true, Team = 2 });
-                        enemyList.Add(new VitaruPlayer(gamePlayfield, enemyThree) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(200, 100), Auto = true, Bot = true, Team = 2 });
-                        enemyList.Add(new VitaruPlayer(gamePlayfield, enemyFour) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(512f / 2, 100), Auto = true, Bot = true, Team = 2 });
-                        enemyList.Add(new VitaruPlayer(gamePlayfield, enemyFive) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(512 - 200, 100), Auto = true, Bot = true, Team = 2 });
-                        enemyList.Add(new VitaruPlayer(gamePlayfield, enemySix) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(512 - 125, 100), Auto = true, Bot = true, Team = 2 });
-                        enemyList.Add(new VitaruPlayer(gamePlayfield, enemySeven) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(512, 100), Auto = true, Bot = true, Team = 2 });
+                        enemyList.Add(new VitaruPlayer(this, enemyOne) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(0, 100), Auto = true, Bot = true, Team = 2 });
+                        enemyList.Add(new VitaruPlayer(this, enemyTwo) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(125, 100), Auto = true, Bot = true, Team = 2 });
+                        enemyList.Add(new VitaruPlayer(this, enemyThree) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(200, 100), Auto = true, Bot = true, Team = 2 });
+                        enemyList.Add(new VitaruPlayer(this, enemyFour) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(512f / 2, 100), Auto = true, Bot = true, Team = 2 });
+                        enemyList.Add(new VitaruPlayer(this, enemyFive) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(512 - 200, 100), Auto = true, Bot = true, Team = 2 });
+                        enemyList.Add(new VitaruPlayer(this, enemySix) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(512 - 125, 100), Auto = true, Bot = true, Team = 2 });
+                        enemyList.Add(new VitaruPlayer(this, enemySeven) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(512, 100), Auto = true, Bot = true, Team = 2 });
                         break;
                     case 8:
-                        enemyList.Add(new VitaruPlayer(gamePlayfield, enemyOne) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(0, 100), Auto = true, Bot = true, Team = 2 });
-                        enemyList.Add(new VitaruPlayer(gamePlayfield, enemyTwo) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(125, 100), Auto = true, Bot = true, Team = 2 });
-                        enemyList.Add(new VitaruPlayer(gamePlayfield, enemyThree) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(200, 100), Auto = true, Bot = true, Team = 2 });
-                        enemyList.Add(new VitaruPlayer(gamePlayfield, enemyFour) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(250, 100), Auto = true, Bot = true, Team = 2 });
-                        enemyList.Add(new VitaruPlayer(gamePlayfield, enemyFive) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(512 - 250, 100), Auto = true, Bot = true, Team = 2 });
-                        enemyList.Add(new VitaruPlayer(gamePlayfield, enemySix) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(512 - 200, 100), Auto = true, Bot = true, Team = 2 });
-                        enemyList.Add(new VitaruPlayer(gamePlayfield, enemySeven) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(512 - 125, 100), Auto = true, Bot = true, Team = 2 });
-                        enemyList.Add(new VitaruPlayer(gamePlayfield, enemyEight) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(512, 100), Auto = true, Bot = true, Team = 2 });
+                        enemyList.Add(new VitaruPlayer(this, enemyOne) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(0, 100), Auto = true, Bot = true, Team = 2 });
+                        enemyList.Add(new VitaruPlayer(this, enemyTwo) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(125, 100), Auto = true, Bot = true, Team = 2 });
+                        enemyList.Add(new VitaruPlayer(this, enemyThree) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(200, 100), Auto = true, Bot = true, Team = 2 });
+                        enemyList.Add(new VitaruPlayer(this, enemyFour) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(250, 100), Auto = true, Bot = true, Team = 2 });
+                        enemyList.Add(new VitaruPlayer(this, enemyFive) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(512 - 250, 100), Auto = true, Bot = true, Team = 2 });
+                        enemyList.Add(new VitaruPlayer(this, enemySix) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(512 - 200, 100), Auto = true, Bot = true, Team = 2 });
+                        enemyList.Add(new VitaruPlayer(this, enemySeven) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(512 - 125, 100), Auto = true, Bot = true, Team = 2 });
+                        enemyList.Add(new VitaruPlayer(this, enemyEight) { Anchor = Anchor.Centre, Origin = Anchor.Centre, Position = new Vector2(512, 100), Auto = true, Bot = true, Team = 2 });
                         break;
                 }
 
                 foreach (VitaruPlayer enemy in enemyList)
-                    gamePlayfield.Add(enemy);
+                    CharacterField.Add(enemy);
             }
-        }
-
-        protected override void LoadComplete()
-        {
-            base.LoadComplete();
 
             foreach (var o in VitaruBeatmapConverter.HitObjectList)
             {
                 var p = (Pattern)o;
                 p.Samples = new List<SampleInfo>();
-                Add(new DrawablePattern(gamePlayfield, p));
+                Add(new DrawablePattern(p, this));
             }
             VitaruBeatmapConverter.HitObjectList = new List<Rulesets.Objects.HitObject>();
         }

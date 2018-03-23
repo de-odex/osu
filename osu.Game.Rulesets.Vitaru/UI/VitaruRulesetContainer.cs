@@ -63,16 +63,20 @@ namespace osu.Game.Rulesets.Vitaru.UI
         protected override DrawableHitObject<VitaruHitObject> GetVisualRepresentation(VitaruHitObject h)
         {
             if (h is Bullet bullet)
-                return new DrawableBullet(VitaruPlayfield.GamePlayfield, bullet);
+                return new DrawableBullet(bullet, new VitaruPlayfield());
             if (h is Laser laser)
-                return new DrawableLaser(VitaruPlayfield.GamePlayfield, laser);
+                return new DrawableLaser(laser, new VitaruPlayfield());
             if (h is Pattern pattern)
-                return new DrawablePattern(VitaruPlayfield.GamePlayfield, pattern);
+                return new DrawablePattern(pattern, new VitaruPlayfield());
             return null;
         }
 
         //protected override FramedReplayInputHandler CreateReplayInputHandler(Replay replay) => new VitaruReplayInputHandler(replay);
 
-        protected override Vector2 GetAspectAdjustedSize() => new Vector2(0.75f);
+        protected override Vector2 GetAspectAdjustedSize()
+        {
+            var aspectSize = DrawSize.X * 0.75f < DrawSize.Y ? new Vector2(DrawSize.X, DrawSize.X * 0.75f) : new Vector2(DrawSize.Y * 10f / 16f, DrawSize.Y);
+            return new Vector2(aspectSize.X / DrawSize.X, aspectSize.Y / DrawSize.Y);
+        }
     }
 }

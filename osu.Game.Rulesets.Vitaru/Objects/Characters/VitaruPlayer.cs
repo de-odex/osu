@@ -132,7 +132,7 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Characters
         #endregion
 
         #region Loading Stuff
-        public VitaruPlayer(Container parent, Characters characterOverride, VitaruPlayer parentPlayer = null) : base(parent)
+        public VitaruPlayer(VitaruPlayfield playfield, Characters characterOverride, VitaruPlayer parentPlayer = null) : base(playfield)
         {
             Anchor = Anchor.Centre;
             Origin = Anchor.Centre;
@@ -141,7 +141,7 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Characters
 
             CurrentCharacter = characterOverride;
 
-            parent.Add(cursor = new Container
+            VitaruPlayfield.CharacterField.Add(cursor = new Container
             {
                 Anchor = Anchor.TopLeft,
                 Origin = Anchor.Centre,
@@ -338,12 +338,12 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Characters
                 {
                     AddRange(new Drawable[]
                     {
-                        leftTotem = new Totem(this)
+                        leftTotem = new Totem(this, VitaruPlayfield)
                         {
                             Position = new Vector2(-20, -30),
                             StartAngle = -20,
                         },
-                        rightTotem = new Totem(this)
+                        rightTotem = new Totem(this, VitaruPlayfield)
                         {
                             Position = new Vector2(20, -30),
                             StartAngle = 20,
@@ -369,7 +369,7 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Characters
 
                 if (CurrentCharacter == Characters.YukariYakumo)
                 {
-                    Parent.AddRange(new Drawable[]
+                    VitaruPlayfield.SpellField.AddRange(new Drawable[]
                     {
                         riftStart = new Rift(Color4.DarkViolet),
                         riftEnd = new Rift(Color4.DarkRed)
@@ -528,7 +528,7 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Characters
                 onQuarterBeat();
 
             if (CharacterSign.Alpha > 0)
-                CharacterSign.RotateTo((float)(Clock.CurrentTime / 1000 * 90));
+                CharacterSign.Rotation += (float)(Clock.ElapsedFrameTime / 1000 * 90);
 
             if (VitaruNetworkingClientHandler != null && packetTime + 250 <= Time.Current)
             {
@@ -690,13 +690,13 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Characters
             else
                 Energy -= energyOverride;
 
-            Parent.Add(drawableLaser = new DrawableLaser(Parent, new Laser
+            VitaruPlayfield.BulletField.Add(drawableLaser = new DrawableLaser(new Laser
             {
                 LaserSize = new Vector2(80, 400),
                 Team = Team,
                 StartTime = Time.Current,
                 EndTime = Time.Current + 2000
-            }));
+            }, VitaruPlayfield));
             drawableLaser.Position = Position;
         }
 
@@ -739,7 +739,7 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Characters
                 }
 
                 VitaruPlayer player;
-                Parent.Add(player = new VitaruPlayer(Parent, CurrentCharacter, this)
+                VitaruPlayfield.CharacterField.Add(player = new VitaruPlayer(VitaruPlayfield, CurrentCharacter, this)
                 {
                     Anchor = Anchor.Centre,
                     Origin = Anchor.Centre,
@@ -797,7 +797,7 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Characters
             Hitbox.HitDetection = false;
 
             VitaruPlayer player;
-            Parent.Add(player = new VitaruPlayer(Parent, CurrentCharacter, this)
+            VitaruPlayfield.CharacterField.Add(player = new VitaruPlayer(VitaruPlayfield, CurrentCharacter, this)
             {
                 Alpha = 0,
                 Anchor = Anchor.Centre,
@@ -978,7 +978,7 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Characters
 
             CharacterSign.Alpha = Energy / (maxEnergy * 2);
 
-            foreach (Drawable drawable in Parent.Children)
+            foreach (Drawable drawable in VitaruPlayfield.SpellField.Children)
                 if (drawable is Rift rift && warpTime <= Time.Current && rift.Alpha > 0)
                 {
                     Vector2 riftPos = rift.ToSpaceOfOtherDrawable(Vector2.Zero, Hitbox) + new Vector2(20);
@@ -1151,7 +1151,7 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Characters
             if (clock is IHasPitchAdjust pitchAdjust)
                 pitchAdjust.PitchAdjust = speed;
             SpeedMultiplier = 1 / speed;
-            foreach (Drawable draw in Parent)
+            foreach (Drawable draw in VitaruPlayfield.CharacterField)
             {
                 VitaruPlayer player = draw as VitaruPlayer;
                 if (player?.Team == Team && player != this)
@@ -1168,8 +1168,7 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Characters
             if (Invert)
                 angle += (float)Math.PI;
 
-            Parent.Add(drawableBullet = new DrawableBullet(Parent,
-            new Bullet
+            VitaruPlayfield.BulletField.Add(drawableBullet = new DrawableBullet(new Bullet
             {
                 StartTime = Time.Current,
                 Cs = 1.2f,
@@ -1181,7 +1180,8 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Characters
                 ColorOverride = color,
                 Team = Team,
                 Ghost = CurrentCharacter == Characters.YuyukoSaigyouji | CurrentCharacter == Characters.AliceMuyart
-            }));
+            }, VitaruPlayfield));
+
             if (vampuric)
                 drawableBullet.OnHit = () => Heal(0.5f);
             drawableBullet.MoveTo(Position);
@@ -1289,7 +1289,7 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Characters
                 float behindBulletEdgeDitance = float.MaxValue;
                 float behindBulletAngle = 0;
 
-                foreach (Drawable draw in Parent)
+                foreach (Drawable draw in VitaruPlayfield.BulletField)
                     if (draw is DrawableBullet)
                     {
                         DrawableBullet bullet = draw as DrawableBullet;

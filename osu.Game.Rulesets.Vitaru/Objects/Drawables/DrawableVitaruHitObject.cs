@@ -4,16 +4,22 @@ using System.ComponentModel;
 using osu.Game.Rulesets.Objects.Types;
 using osu.Game.Skinning;
 using OpenTK.Graphics;
+using System.Linq;
+using osu.Framework.Graphics;
+using osu.Game.Rulesets.Vitaru.UI;
 
 namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
 {
     public class DrawableVitaruHitObject : DrawableSymcolHitObject<VitaruHitObject>
     {
-        public static float TIME_PREEMPT = 600;
-        public static float TIME_FADEIN = 300;
-        public static float TIME_FADEOUT = 1200;
+        protected readonly VitaruPlayfield VitaruPlayfield;
 
-        public readonly Framework.Graphics.Containers.Container ParentContainer;
+        public DrawableVitaruHitObject(VitaruHitObject hitObject, VitaruPlayfield playfield) : base(hitObject)
+        {
+            VitaruPlayfield = playfield;
+
+            Alpha = 0;
+        }
 
         protected override void SkinChanged(ISkinSource skin, bool allowFallback)
         {
@@ -25,19 +31,27 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
                 AccentColour = HitObject.ColorOverride;
         }
 
-        public DrawableVitaruHitObject(VitaruHitObject hitObject, Framework.Graphics.Containers.Container parent) : base(hitObject)
+        protected sealed override void UpdateState(ArmedState state)
         {
-            ParentContainer = parent;
+            double transformTime = HitObject.StartTime - HitObject.TimePreempt;
 
-            if (hitObject.Ar != -1)
+            base.ApplyTransformsAt(transformTime, true);
+            base.ClearTransformsAfter(transformTime, true);
+
+            using (BeginAbsoluteSequence(transformTime, true))
             {
-                TIME_PREEMPT = hitObject.Ar;
-                TIME_FADEOUT = hitObject.Ar * 2;
-                TIME_FADEIN = hitObject.Ar / 2;
+                UpdatePreemptState();
+
+                using (BeginDelayedSequence(HitObject.TimePreempt + (Judgements.FirstOrDefault()?.TimeOffset ?? 0), true))
+                    UpdateCurrentState(state);
             }
         }
 
-        protected sealed override void UpdateState(ArmedState state) { }
+        protected virtual void UpdatePreemptState() => this.FadeIn(HitObject.TimeFadein);
+
+        protected virtual void UpdateCurrentState(ArmedState state)
+        {
+        }
     }
 
     public enum ComboResult

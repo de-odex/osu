@@ -8,7 +8,7 @@ namespace Symcol.Rulesets.Core
     {
         public static RulesetNetworkingClientHandler RulesetNetworkingClientHandler;
 
-        public SymcolPlayfield(Vector2 size) : base(size.X)
+        public SymcolPlayfield(float sizeX) : base(sizeX)
         {
         }
     }
