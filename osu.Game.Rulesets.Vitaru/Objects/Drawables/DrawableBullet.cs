@@ -263,7 +263,7 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
                     BulletVelocity = getBulletVelocity();
 
                 float frameTime = (float)Clock.ElapsedFrameTime;
-                this.MoveToOffset(new Vector2(BulletVelocity.X * BulletSpeedModifier * frameTime, BulletVelocity.Y * BulletSpeedModifier * frameTime));
+                Position += new Vector2(BulletVelocity.X * BulletSpeedModifier * frameTime, BulletVelocity.Y * BulletSpeedModifier * frameTime);
 
                 if (Bullet.ObeyBoundries && Position.Y < BulletBounds.Y | Position.X < BulletBounds.X | Position.Y > BulletBounds.W | Position.X > BulletBounds.Z && !returnJudgement)
                 {

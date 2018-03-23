@@ -1173,6 +1173,7 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Characters
             {
                 StartTime = Time.Current,
                 Cs = 1.2f,
+                Position = Position,
                 BulletAngle = angle,
                 BulletSpeed = speed,
                 BulletDiameter = 16,
