@@ -115,6 +115,9 @@ namespace osu.Game.Rulesets.Vitaru.Objects
                         b.Position = Position + Curve.PositionAt(repeat % 2);
 
                         b.NewCombo = NewCombo;
+                        b.IndexInCurrentCombo = IndexInCurrentCombo;
+                        b.ComboIndex = ComboIndex;
+                        b.LastInCombo = LastInCombo;
                         b.Ar = Ar;
                         b.Cs = Cs;
 
