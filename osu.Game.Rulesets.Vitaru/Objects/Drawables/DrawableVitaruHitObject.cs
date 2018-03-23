@@ -42,7 +42,7 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
             {
                 UpdatePreemptState();
 
-                using (BeginDelayedSequence(HitObject.TimePreempt + (Judgements.FirstOrDefault()?.TimeOffset ?? 0), true))
+                using (BeginDelayedSequence(HitObject.TimePreempt, true))
                     UpdateCurrentState(state);
             }
         }

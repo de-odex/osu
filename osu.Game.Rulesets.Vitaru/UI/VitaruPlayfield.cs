@@ -53,7 +53,7 @@ namespace osu.Game.Rulesets.Vitaru.UI
 
         private static Vector2 parentDrawSize = new Vector2(1280, 720);
 
-        public VitaruPlayfield() : base(BaseSize.X)
+        public VitaruPlayfield() : base(BaseSize)
         {
             Anchor = Anchor.Centre;
             Origin = Anchor.Centre;

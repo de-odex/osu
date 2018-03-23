@@ -54,9 +54,6 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
 
         public DrawableBullet(Bullet bullet, DrawablePattern drawablePattern, VitaruPlayfield playfield) : base(bullet, playfield)
         {
-            AlwaysPresent = true;
-            Alpha = 0;
-
             Anchor = Anchor.TopLeft;
             Origin = Anchor.Centre;
 
@@ -73,9 +70,6 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
 
         public DrawableBullet(Bullet bullet, VitaruPlayfield playfield) : base(bullet, playfield)
         {
-            AlwaysPresent = true;
-            Alpha = 0;
-
             Anchor = Anchor.TopLeft;
             Origin = Anchor.Centre;
 
@@ -211,8 +205,8 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
             Position = Bullet.Position;
             Hitbox.HitDetection = true;
             started = true;
-            this.FadeInFromZero(100);
-            this.ScaleTo(Vector2.One, 100);
+            this.FadeInFromZero(100)
+                .ScaleTo(Vector2.One, 100);
         }
 
         protected override void UpdateCurrentState(ArmedState state)

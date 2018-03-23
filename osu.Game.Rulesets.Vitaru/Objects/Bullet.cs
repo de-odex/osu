@@ -54,10 +54,10 @@ namespace osu.Game.Rulesets.Vitaru.Objects
         public List<List<SampleInfo>> RepeatSamples { get; set; } = new List<List<SampleInfo>>();
         public bool IsSlider { get; set; } = false;
         private const float base_scoring_distance = 100;
-        public double EndTime => StartTime + this.SpanCount() * Curve.Distance / Velocity;
+        public double EndTime => StartTime + Curve.Distance / Velocity;
         public double Duration => EndTime - StartTime;
         public SliderCurve Curve { get; private set; } = new SliderCurve();
-        public double Velocity;
+        public double Velocity => BulletSpeed;
         public double SpanDuration => Duration / this.SpanCount();
         public int RepeatCount { get; set; }
 
@@ -79,19 +79,12 @@ namespace osu.Game.Rulesets.Vitaru.Objects
             set { Curve.Distance = value; }
         }
 
-        public override Vector2 EndPosition => Position + this.CurvePositionAt(1);
-        public Vector2 PositionAt(double t) => Position + this.CurvePositionAt(t);
+        public override Vector2 EndPosition => this.CurvePositionAt(1);
+        public Vector2 PositionAt(double t) => this.CurvePositionAt(t);
 
         protected override void ApplyDefaultsToSelf(ControlPointInfo controlPointInfo, BeatmapDifficulty difficulty)
         {
             base.ApplyDefaultsToSelf(controlPointInfo, difficulty);
-
-            TimingControlPoint timingPoint = controlPointInfo.TimingPointAt(StartTime);
-            DifficultyControlPoint difficultyPoint = controlPointInfo.DifficultyPointAt(StartTime);
-
-            double scoringDistance = base_scoring_distance * difficulty.SliderMultiplier * difficultyPoint.SpeedMultiplier;
-
-            Velocity = scoringDistance / timingPoint.BeatLength;
 
             SliderType = SliderType.Straight;
         }

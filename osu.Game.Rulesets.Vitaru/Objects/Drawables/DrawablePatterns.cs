@@ -18,7 +18,6 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
 
         public static int PatternCount;
         private readonly Pattern pattern;
-        private Vector2 patternStartPosition;
         private Container energyCircle;
 
         private bool loaded;
@@ -74,7 +73,7 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
                         Team = 1,
                     });
 
-                    Child = energyCircle = new Container
+                    VitaruPlayfield.CharacterField.Add(energyCircle = new Container
                     {
                         Alpha = 0,
                         Masking = true,
@@ -98,13 +97,14 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
                             Colour = AccentColour.Opacity(0.5f),
                             Radius = Width / 2,
                         }
-                    };
+                    });
 
                     enemy.Position = getPatternStartPosition();
+                    energyCircle.Position = enemy.Position;
                 }
                 else
                 {
-                    Child = energyCircle = new CircularContainer
+                    VitaruPlayfield.CharacterField.Add(energyCircle = new CircularContainer
                     {
                         Masking = true,
                         Anchor = Anchor.Centre,
@@ -127,7 +127,8 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
                             Colour = AccentColour.Opacity(0.5f),
                             Radius = Width / 2,
                         }
-                    };
+                    });
+                    energyCircle.Position = getPatternStartPosition();
                 }
 
                 Position = pattern.Position;
@@ -136,7 +137,7 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
                 //Load the bullets
                 foreach (var o in pattern.NestedHitObjects)
                 {
-                    var b = (Bullet)o;
+                    Bullet b = (Bullet)o;
                     DrawableBullet drawableBullet = new DrawableBullet(b, this, VitaruPlayfield);
                     VitaruPlayfield.BulletField.Add(drawableBullet);
                     AddNested(drawableBullet);
@@ -148,6 +149,8 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
 
         private Vector2 getPatternStartPosition()
         {
+            Vector2 patternStartPosition;
+
             if (pattern.Position.X <= 384f / 2 && pattern.Position.Y <= 512f / 2)
                 patternStartPosition = pattern.Position - new Vector2(384f / 2, 512f / 2);
             else if (pattern.Position.X > 384f / 2 && pattern.Position.Y <= 512f / 2)
@@ -165,10 +168,10 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
             base.UpdatePreemptState();
 
             enemy.FadeIn(Math.Min(HitObject.TimeFadein * 2, HitObject.TimePreempt))
-                .MoveTo(Position, HitObject.TimePreempt);
+                .MoveTo(pattern.Position, HitObject.TimePreempt);
 
             energyCircle.FadeIn(Math.Min(HitObject.TimeFadein * 2, HitObject.TimePreempt))
-                .MoveTo(Position, HitObject.TimePreempt);
+                .MoveTo(pattern.Position, HitObject.TimePreempt);
         }
 
         protected override void UpdateCurrentState(ArmedState state)
@@ -186,13 +189,13 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
         private void end()
         {
             if (currentGameMode != VitaruGamemode.Dodge)
-                enemy.MoveTo(patternStartPosition, HitObject.TimePreempt * 2, Easing.InQuint)
+                enemy.MoveTo(getPatternStartPosition(), HitObject.TimePreempt * 2, Easing.InQuint)
                     .Delay(HitObject.TimePreempt * 2 - HitObject.TimeFadein)
                     .ScaleTo(new Vector2(0.5f), HitObject.TimeFadein, Easing.InQuint)
                     .FadeOut(HitObject.TimeFadein, Easing.InQuint)
                     .Expire();
 
-            this.MoveTo(patternStartPosition, HitObject.TimePreempt * 2, Easing.InQuint)
+            this.MoveTo(getPatternStartPosition(), HitObject.TimePreempt * 2, Easing.InQuint)
                 .Expire();
 
             energyCircle.FadeOut(HitObject.TimePreempt / 2)
