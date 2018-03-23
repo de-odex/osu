@@ -272,7 +272,7 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
                     b.Position = Position;
 
                     if (b.Bullet.ShootPlayer)
-                        b.Bullet.BulletAngleRadian += pattern.PlayerRelativePositionAngle(VitaruPlayfield.VitaruPlayer.Position, b.Position) - Math.PI / 2;
+                        b.Bullet.BulletAngle += pattern.PlayerRelativePositionAngle(VitaruPlayfield.VitaruPlayer.Position, b.Position) - Math.PI / 2;
                 }
         }
 

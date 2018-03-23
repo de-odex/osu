@@ -216,8 +216,7 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
 
             else if (Hit)
             {
-                if (!Bullet.DummyMode)
-                    AddJudgement(new VitaruJudgement { Result = HitResult.Miss });
+                AddJudgement(new VitaruJudgement { Result = HitResult.Miss });
                 unload();
             }
 
@@ -236,7 +235,7 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
 
         private Vector2 getBulletVelocity()
         {
-            Vector2 velocity = new Vector2(Bullet.BulletSpeed * (float)Math.Cos(Bullet.BulletAngleRadian), Bullet.BulletSpeed * (float)Math.Sin(Bullet.BulletAngleRadian));
+            Vector2 velocity = new Vector2(Bullet.BulletSpeed * (float)Math.Cos(Bullet.BulletAngle), Bullet.BulletSpeed * (float)Math.Sin(Bullet.BulletAngle));
             return velocity;
         }
 
@@ -250,10 +249,10 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
                 OnHit = null;
             }
 
-            if (Position.Y >= BulletBounds.Y | Position.X >= BulletBounds.X | Position.Y <= BulletBounds.W | Position.X <= BulletBounds.Z && Time.Current >= Bullet.StartTime | Bullet.DummyMode || !Bullet.ObeyBoundries && Time.Current >= Bullet.StartTime | Bullet.DummyMode)
+            if (Position.Y >= BulletBounds.Y | Position.X >= BulletBounds.X | Position.Y <= BulletBounds.W | Position.X <= BulletBounds.Z && Time.Current >= Bullet.StartTime || !Bullet.ObeyBoundries && Time.Current >= Bullet.StartTime)
                 load();
 
-            if (BulletDeleteTime <= Time.Current && BulletDeleteTime != -1 || Time.Current < Bullet.StartTime && !Bullet.DummyMode)
+            if (BulletDeleteTime <= Time.Current && BulletDeleteTime != -1 || Time.Current < Bullet.StartTime)
                 unload();
 
             if (Time.Current >= Bullet.StartTime)

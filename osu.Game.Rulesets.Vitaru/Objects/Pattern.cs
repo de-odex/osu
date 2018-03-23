@@ -18,16 +18,14 @@ namespace osu.Game.Rulesets.Vitaru.Objects
         /// </summary>
         #region Pattern
         public int PatternID { get; set; }
-        public float PatternSpeed { get; set; }
-        public float PatternDifficulty { get; set; } = 1;
-        private float patternAngleRadian { get; set; } = -10;
-        public float PatternAngleDegree { get; set; }
-        public float PatternBulletDiameter { get; set; } = 4;
-        public float PatternDamage { get; set; } = 10;
-        private bool dynamicPatternVelocity { get; } = false;
-        public int PatternTeam { get; set; }
-        private int totalBullets;
-        private bool shootPlayer;
+        public double PatternSpeed { get; set; } = 0.25d;
+        public double PatternComplexity { get; set; } = 1;
+
+        //Radians
+        public double PatternAngle { get; set; } = Math.PI / 2;
+        public double PatternDiameter { get; set; } = 20;
+        public double PatternDamage { get; set; } = 10;
+        public int PatternTeam { get; set; } = 1;
         private double beatLength;
         #endregion
 
@@ -94,30 +92,6 @@ namespace osu.Game.Rulesets.Vitaru.Objects
         #endregion
 
         #region Bullet Loading
-        public int GetTotalBullets()
-        {
-            switch (PatternID)
-            {
-                case 1:
-                    totalBullets += (int)PatternDifficulty * 2 + 1;
-                    break;
-                case 2:
-                    totalBullets += (int)PatternDifficulty + 1;
-                    break;
-                case 3:
-                    totalBullets += (int)(PatternDifficulty + 2) / 2;
-                    break;
-                case 4:
-                    totalBullets += (int)(PatternDifficulty * 4);
-                    break;
-                case 5:
-                    totalBullets += (int)(30 * (PatternDifficulty / 3) * (Duration / 1000));
-                    break;
-            }
-
-            return totalBullets;
-        }
-
         public float EnemyHealth { get; set; } = 40;
 
         protected override void CreateNestedHitObjects()
@@ -140,14 +114,10 @@ namespace osu.Game.Rulesets.Vitaru.Objects
                         b.StartTime = StartTime + repeat * SpanDuration;
                         b.Position = Position + Curve.PositionAt(repeat % 2);
 
-                        b.BulletSpeed *= (float)Velocity * 2;
-
                         b.NewCombo = NewCombo;
                         b.Ar = Ar;
                         b.Cs = Cs;
                         b.StackHeight = StackHeight;
-
-                        b.ShootPlayer = shootPlayer;
 
                         AddNested(b);
                     }
@@ -159,8 +129,6 @@ namespace osu.Game.Rulesets.Vitaru.Objects
 
                 foreach (Bullet b in bullets)
                 {
-                    b.BulletSpeed *= (float)Velocity * 2;
-
                     b.Ar = Ar;
                     b.Cs = Cs;
                     b.StackHeight = StackHeight;
@@ -170,8 +138,6 @@ namespace osu.Game.Rulesets.Vitaru.Objects
                     b.ComboIndex = ComboIndex;
                     b.LastInCombo = LastInCombo;
 
-                    b.ShootPlayer = shootPlayer;
-
                     AddNested(b);
                 }
             }
@@ -179,166 +145,23 @@ namespace osu.Game.Rulesets.Vitaru.Objects
 
         private IEnumerable<Bullet> createPattern()
         {
-            if (patternAngleRadian == -10)
-                patternAngleRadian = MathHelper.DegreesToRadians(PatternAngleDegree - 90);
-
-            float bulletDiameter = PatternBulletDiameter;
-            bulletDiameter += Cs;
-
-            GetTotalBullets();
-
             switch (PatternID)
             {
                 default:
-                    shootPlayer = false;
-                    return patternWave(bulletDiameter);
+                    return Patterns.Wave(PatternSpeed * (float)Velocity * 2, PatternDiameter, PatternDamage, Position, StartTime, 1, PatternAngle);
                 case 1:
-                    shootPlayer = false;
-                    return patternWave(bulletDiameter);
+                    return Patterns.Wave(PatternSpeed * (float)Velocity * 2, PatternDiameter, PatternDamage, Position, StartTime, 1, PatternAngle);
                 case 2:
-                    shootPlayer = true;
-                    return patternLine(bulletDiameter);
+                    return Patterns.Line((PatternSpeed * (float)Velocity * 2) * 0.75f, (PatternSpeed * (float)Velocity * 2) * 1.5f, PatternDiameter, PatternDamage, Position, StartTime, 1, PatternAngle);
                 case 3:
-                    shootPlayer = true;
-                    return patternTriangleWave(bulletDiameter);
+                    return Patterns.Triangle(PatternSpeed * (float)Velocity * 2, PatternDiameter, PatternDamage, Position, StartTime, 1, PatternAngle);
                 case 4:
-                    shootPlayer = false;
-                    return patternCircle(bulletDiameter);
+                    return Patterns.Wedge(PatternSpeed * (float)Velocity * 2, PatternDiameter, PatternDamage, Position, StartTime, 1, PatternAngle);
                 case 5:
-                    shootPlayer = true;
-                    return patternFlower(bulletDiameter, Duration);
+                    return Patterns.Circle(PatternSpeed * (float)Velocity * 2, PatternDiameter, PatternDamage, Position, StartTime, 1);
+                case 6:
+                    return Patterns.Spiral(PatternSpeed * (float)Velocity * 2, PatternDiameter, PatternDamage, Position, StartTime, Duration, beatLength, 1);
             }
-        }
-
-        /// <summary>
-        /// These will be the base patterns
-        /// </summary>
-        private List<Bullet> patternWave(float diameter)
-        {
-            List<Bullet> bullets = new List<Bullet>();
-            int numberOfBullets = (int)PatternDifficulty * 2 + 1;
-            float directionModifier = -0.1f * ((float)(numberOfBullets - 1) / 2);
-            for (int i = 1; i <= numberOfBullets; i++)
-            {
-                float angle = directionModifier + patternAngleRadian;
-                bullets.Add(new Bullet
-                {
-                    StartTime = StartTime,
-                    Position = Position,
-                    BulletSpeed = PatternSpeed,
-                    BulletAngleRadian = angle,
-                    BulletDiameter = diameter,
-                    BulletDamage = PatternDamage,
-                    DynamicBulletVelocity = dynamicPatternVelocity,
-                    Team = 1,
-                    Ghost = i == ((numberOfBullets - 1) / 2) + 1
-                });
-                directionModifier += 0.1f;
-            }
-            return bullets;
-        }
-        private List<Bullet> patternLine(float diameter)
-        {
-            List<Bullet> bullets = new List<Bullet>();
-            int numberbullets = (int)PatternDifficulty + 1;
-            float speed = PatternSpeed;
-            for (int i = 1; i <= numberbullets; i++)
-            {
-                bullets.Add(new Bullet
-                {
-                    StartTime = StartTime,
-                    Position = Position,
-                    BulletSpeed = speed,
-                    BulletAngleRadian = patternAngleRadian,
-                    BulletDiameter = diameter,
-                    BulletDamage = PatternDamage,
-                    DynamicBulletVelocity = true,//dynamicPatternVelocity,
-                    Team = 1,
-                });
-                speed += 0.14f;
-            }
-            return bullets;
-        }
-        private List<Bullet> patternTriangleWave(float diameter)
-        {
-            List<Bullet> bullets = new List<Bullet>();
-            int numberwaves = (int)(PatternDifficulty + 2) / 2;
-            float originalDirection = 0f;
-            double duration = Duration / numberwaves;
-            for (int i = 1; i <= numberwaves; i++)
-            {
-                var numberbullets = i;
-                var speedModifier = 0.30f - (i - 1) * 0.03f;
-                for (int j = 1; j <= numberbullets; j++)
-                {
-                    float directionModifier = ((j - 1) * 0.1f);
-                    var speed = PatternSpeed + speedModifier;
-                    float angle = patternAngleRadian + (originalDirection - directionModifier);
-                    bullets.Add(new Bullet
-                    {
-                        StartTime = StartTime,
-                        Position = Position,
-                        BulletSpeed = speed,
-                        BulletAngleRadian = angle,
-                        BulletDiameter = diameter,
-                        BulletDamage = PatternDamage,
-                        DynamicBulletVelocity = dynamicPatternVelocity,
-                        Team = 1,
-                    });
-                }
-                originalDirection = 0.05f * i;
-            }
-            return bullets;
-        }
-        private List<Bullet> patternCircle(float diameter)
-        {
-            List<Bullet> bullets = new List<Bullet>();
-            int numberbullets = (int)(PatternDifficulty * 4);
-            float directionModifier = (360f / numberbullets);
-            float direction = MathHelper.DegreesToRadians(-90);
-            directionModifier = MathHelper.DegreesToRadians(directionModifier);
-            for (int i = 1; i <= numberbullets; i++)
-            {
-                patternAngleRadian = patternAngleRadian + (directionModifier * (i - 1));
-                bullets.Add(new Bullet
-                {
-                    StartTime = StartTime,
-                    Position = Position,
-                    BulletSpeed = PatternSpeed,
-                    BulletAngleRadian = patternAngleRadian,
-                    BulletDiameter = diameter,
-                    BulletDamage = PatternDamage,
-                    DynamicBulletVelocity = dynamicPatternVelocity,
-                    Team = 1,
-                });
-            }
-            return bullets;
-        }
-        private List<Bullet> patternFlower(float diameter, double duration, int arms = 4)
-        {
-            List<Bullet> bullets = new List<Bullet>();
-            int numberbullets = (int)(PatternDifficulty * 4);
-            double directionModifier = 0;
-            for (double j = StartTime; j <= StartTime + duration; j += beatLength / 2)
-            {
-                for (int i = 0; i <= arms; i++)
-                {
-                    bullets.Add(new Bullet
-                    {
-                        StartTime = j,
-                        Position = Position,
-                        BulletSpeed = PatternSpeed,
-                        BulletAngleRadian = directionModifier,
-                        BulletDiameter = diameter,
-                        BulletDamage = PatternDamage,
-                        DynamicBulletVelocity = dynamicPatternVelocity,
-                        Team = 1,
-                    });
-                    directionModifier += Math.PI / 2;
-                }
-                directionModifier += 0.3d;
-            }
-            return bullets;
         }
 
         //Finds what direction the player is

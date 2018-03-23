@@ -58,6 +58,7 @@
     <Compile Include="Objects\Characters\Pieces\Metranome.cs" />
     <Compile Include="Objects\Drawables\Pieces\SeekingBulletPiece.cs" />
     <Compile Include="Objects\Characters\Pieces\UFO.cs" />
+    <Compile Include="Objects\Patterns.cs" />
     <Compile Include="Objects\SeekingBullet.cs" />
     <Compile Include="UI\VitaruSkinElement.cs" />
     <Compile Include="VitaruAPIContainer.cs" />

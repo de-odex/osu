@@ -30,216 +30,85 @@ namespace osu.Game.Rulesets.Vitaru.Beatmaps
 
             List<SampleInfo> samples = original.Samples;
 
-            int difficulty = 2;
+            double complexity = 1;
             if (currentGameMode == VitaruGamemode.Dodge)
-                difficulty = 1;
+                complexity = 0.5f;
 
             ar = calculateAr(beatmap.BeatmapInfo.BaseDifficulty.ApproachRate);
             cs = calculateCs(beatmap.BeatmapInfo.BaseDifficulty.CircleSize);
 
-            bool isLine = samples.Any(s => s.Name == SampleInfo.HIT_WHISTLE);
-            bool isTriangleWave = samples.Any(s => s.Name == SampleInfo.HIT_FINISH);
-            bool isCoolWave = samples.Any(s => s.Name == SampleInfo.HIT_CLAP);
+            bool isWhistle = samples.Any(s => s.Name == SampleInfo.HIT_WHISTLE);
+            bool isFinish = samples.Any(s => s.Name == SampleInfo.HIT_FINISH);
+            bool isClap = samples.Any(s => s.Name == SampleInfo.HIT_CLAP);
 
-            Pattern p;
+            Pattern p = new Pattern
+            {
+                Ar = ar,
+                Cs = cs,
+                StartTime = original.StartTime,
+                Position = positionData?.Position ?? Vector2.Zero,
+                Samples = original.Samples,
+                PatternComplexity = complexity,
+                PatternTeam = 1,
+                NewCombo = comboData?.NewCombo ?? false,
+            };
 
             if (original is IHasCurve curveData)
             {
-                if (isLine)
+                p.IsSlider = true;
+                p.ControlPoints = curveData.ControlPoints;
+                p.CurveType = curveData.CurveType;
+                p.Distance = curveData.Distance;
+                p.RepeatSamples = curveData.RepeatSamples;
+                p.RepeatCount = curveData.RepeatCount;
+
+                p.EnemyHealth = 60;
+
+                if (isWhistle)
                 {
-                    p = new Pattern
-                    {
-                        Ar = ar,
-                        Cs = cs,
-                        StartTime = original.StartTime,
-                        Position = positionData?.Position ?? Vector2.Zero,
-                        Samples = original.Samples,
-                        PatternID = 2,
-                        PatternAngleDegree = 180,
-                        PatternSpeed = 0.25f,
-                        PatternDifficulty = difficulty,
-                        PatternBulletDiameter = 8f * difficulty,
-                        PatternTeam = 1,
-                        EnemyHealth = 60,
-                        ControlPoints = curveData.ControlPoints,
-                        CurveType = curveData.CurveType,
-                        Distance = curveData.Distance,
-                        RepeatSamples = curveData.RepeatSamples,
-                        RepeatCount = curveData.RepeatCount,
-                        NewCombo = comboData?.NewCombo ?? false,
-                        IsSlider = true,
-                    };
+                    p.PatternSpeed = 0.4f;
+                    p.PatternID = 3;
                 }
-                else if (isTriangleWave)
+                else if (isFinish)
                 {
-                    p = new Pattern
-                    {
-                        Ar = ar,
-                        Cs = cs,
-                        StartTime = original.StartTime,
-                        Position = positionData?.Position ?? Vector2.Zero,
-                        Samples = original.Samples,
-                        PatternID = 3,
-                        PatternAngleDegree = 180,
-                        PatternSpeed = 0.25f,
-                        PatternDifficulty = difficulty,
-                        PatternBulletDiameter = 8f * difficulty,
-                        PatternTeam = 1,
-                        EnemyHealth = 60,
-                        ControlPoints = curveData.ControlPoints,
-                        CurveType = curveData.CurveType,
-                        Distance = curveData.Distance,
-                        RepeatSamples = curveData.RepeatSamples,
-                        RepeatCount = curveData.RepeatCount,
-                        NewCombo = comboData?.NewCombo ?? false,
-                        IsSlider = true,
-                    };
+                    p.PatternID = 4;
                 }
-                else if (isCoolWave)
+                else if (isClap)
                 {
-                    p = new Pattern
-                    {
-                        Ar = ar,
-                        Cs = cs,
-                        StartTime = original.StartTime,
-                        Position = positionData?.Position ?? Vector2.Zero,
-                        Samples = original.Samples,
-                        PatternID = 4,
-                        PatternAngleDegree = 180,
-                        PatternSpeed = 0.25f,
-                        PatternDifficulty = difficulty,
-                        PatternBulletDiameter = 6f * difficulty,
-                        PatternTeam = 1,
-                        EnemyHealth = 60,
-                        ControlPoints = curveData.ControlPoints,
-                        CurveType = curveData.CurveType,
-                        Distance = curveData.Distance,
-                        RepeatSamples = curveData.RepeatSamples,
-                        RepeatCount = curveData.RepeatCount,
-                        NewCombo = comboData?.NewCombo ?? false,
-                        IsSlider = true,
-                    };
+                    p.PatternID = 5;
                 }
                 else
                 {
-                    p = new Pattern
-                    {
-                        Ar = ar,
-                        Cs = cs,
-                        StartTime = original.StartTime,
-                        Position = positionData?.Position ?? Vector2.Zero,
-                        Samples = original.Samples,
-                        PatternID = 1,
-                        PatternAngleDegree = 180,
-                        PatternSpeed = 0.20f,
-                        PatternDifficulty = difficulty,
-                        PatternBulletDiameter = 8f * difficulty,
-                        PatternTeam = 1,
-                        EnemyHealth = 60,
-                        ControlPoints = curveData.ControlPoints,
-                        CurveType = curveData.CurveType,
-                        Distance = curveData.Distance,
-                        RepeatSamples = curveData.RepeatSamples,
-                        RepeatCount = curveData.RepeatCount,
-                        NewCombo = comboData?.NewCombo ?? false,
-                        IsSlider = true,
-                    };
+                    p.PatternID = 2;
                 }
             }
             else if (endTimeData != null)
             {
-                p = new Pattern
-                {
-                    Ar = ar,
-                    Cs = cs,
-                    StartTime = original.StartTime,
-                    Position = positionData?.Position ?? Vector2.Zero,
-                    Samples = original.Samples,
-                    IsSpinner = true,
-                    PatternSpeed = 0.25f,
-                    PatternBulletDiameter = 8f * difficulty,
-                    PatternTeam = 1,
-                    EnemyHealth = 120,
-                    PatternDamage = 5,
-                    PatternID = 5,
-                    EndTime = endTimeData.EndTime,
-                    PatternDifficulty = 2 * difficulty,
-                };
+                p.IsSpinner = true;
+                p.PatternSpeed = 0.3f;
+                p.EnemyHealth = 180;
+                p.PatternDamage = 5;
+                p.PatternID = 6;
+                p.EndTime = endTimeData.EndTime;
             }
             else
             {
-                if (isLine)
+                if (isWhistle)
                 {
-                    p = new Pattern
-                    {
-                        Ar = ar,
-                        Cs = cs,
-                        StartTime = original.StartTime,
-                        Position = positionData?.Position ?? Vector2.Zero,
-                        Samples = original.Samples,
-                        PatternID = 2,
-                        PatternAngleDegree = 180,
-                        PatternSpeed = 0.2f,
-                        PatternDifficulty = difficulty * 2,
-                        PatternDamage = 8,
-                        PatternBulletDiameter = 10f * difficulty,
-                        PatternTeam = 1,
-                        NewCombo = comboData?.NewCombo ?? false
-                    };
+                    p.PatternSpeed = 0.5f;
+                    p.PatternID = 3;
                 }
-                else if (isTriangleWave)
+                else if (isFinish)
                 {
-                    p = new Pattern
-                    {
-                        Ar = ar,
-                        Cs = cs,
-                        StartTime = original.StartTime,
-                        Position = positionData?.Position ?? Vector2.Zero,
-                        Samples = original.Samples,
-                        PatternID = 3,
-                        PatternAngleDegree = 180,
-                        PatternSpeed = 0.3f,
-                        PatternDifficulty = difficulty,
-                        PatternBulletDiameter = 10f * difficulty,
-                        PatternTeam = 1,
-                        NewCombo = comboData?.NewCombo ?? false
-                    };
+                    p.PatternID = 1;
                 }
-                else if (isCoolWave)
+                else if (isClap)
                 {
-                    p = new Pattern
-                    {
-                        Ar = ar,
-                        Cs = cs,
-                        StartTime = original.StartTime,
-                        Position = positionData?.Position ?? Vector2.Zero,
-                        Samples = original.Samples,
-                        PatternID = 4,
-                        PatternAngleDegree = 180,
-                        PatternSpeed = 0.18f,
-                        PatternDifficulty = difficulty,
-                        PatternBulletDiameter = 10f * difficulty,
-                        PatternTeam = 1,
-                        NewCombo = comboData?.NewCombo ?? false
-                    };
+                    p.PatternID = 5;
                 }
                 else
                 {
-                    p = new Pattern
-                    {
-                        Ar = ar,
-                        Cs = cs,
-                        StartTime = original.StartTime,
-                        Position = positionData?.Position ?? Vector2.Zero,
-                        Samples = original.Samples,
-                        PatternID = 1,
-                        PatternAngleDegree = 180,
-                        PatternSpeed = 0.28f,
-                        PatternDifficulty = difficulty,
-                        PatternBulletDiameter = 12f * difficulty,
-                        PatternTeam = 1,
-                        NewCombo = comboData?.NewCombo ?? false
-                    };
+                    p.PatternID = 4;
                 }
             }
 
