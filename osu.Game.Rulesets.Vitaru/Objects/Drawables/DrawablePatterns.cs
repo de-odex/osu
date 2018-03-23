@@ -263,14 +263,6 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
                 PatternCount--;
         }
 
-        private void throwBullets()
-        {
-            PlaySamples();
-            foreach (var o in NestedHitObjects)
-                if (o is DrawableBullet b && b.Bullet.StartTime <= Time.Current)
-                    b.Position = Position;
-        }
-
         /// <summary>
         /// All the hitcircle stuff
         /// </summary>
@@ -282,7 +274,7 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
                 started = true;
                 done = true;
 
-                throwBullets();
+                PlaySamples();
                 end();
             }
         }
@@ -299,7 +291,7 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
 
             if (HitObject.StartTime <= Time.Current && !started)
             {
-                throwBullets();
+                PlaySamples();
                 started = true;
             }
 
@@ -313,14 +305,14 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
             if (repeat > currentRepeat)
             {
                 if (repeat < pattern.RepeatCount)
-                    throwBullets();
+                    PlaySamples();
                 currentRepeat = repeat;
             }
 
             if (pattern.EndTime <= Time.Current && started && !done)
             {
                 end();
-                throwBullets();
+                PlaySamples();
                 done = true;
             }
         }
@@ -334,7 +326,7 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
         {
             if (pattern.StartTime <= Time.Current && !started)
             {
-                throwBullets();
+                PlaySamples();
                 started = true;
             }
             if (pattern.EndTime <= Time.Current)

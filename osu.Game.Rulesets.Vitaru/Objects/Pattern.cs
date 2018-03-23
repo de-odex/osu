@@ -103,43 +103,41 @@ namespace osu.Game.Rulesets.Vitaru.Objects
 
         private void createBullets()
         {
+            IEnumerable<Bullet> startCircleBullets = createPattern();
+
+            foreach (Bullet b in startCircleBullets)
+            {
+                b.Ar = Ar;
+                b.Cs = Cs;
+
+                b.NewCombo = NewCombo;
+                b.IndexInCurrentCombo = IndexInCurrentCombo;
+                b.ComboIndex = ComboIndex;
+                b.LastInCombo = LastInCombo;
+
+                AddNested(b);
+            }
+
             if (IsSlider)
             {
-                for (int repeatIndex = 0, repeat = 0; repeatIndex < RepeatCount + 1; repeatIndex++, repeat++)
+                for (int repeatIndex = 0, repeat = 1; repeatIndex < RepeatCount + 1; repeatIndex++, repeat++)
                 {
-                    IEnumerable<Bullet> bullets = createPattern();
+                    IEnumerable<Bullet> sliderBullets = createPattern();
 
-                    foreach (Bullet b in bullets)
+                    foreach (Bullet s in sliderBullets)
                     {
-                        b.StartTime = StartTime + repeat * SpanDuration;
-                        b.Position = Position + Curve.PositionAt(repeat % 2);
+                        s.Ar = Ar;
+                        s.Cs = Cs;
 
-                        b.NewCombo = NewCombo;
-                        b.IndexInCurrentCombo = IndexInCurrentCombo;
-                        b.ComboIndex = ComboIndex;
-                        b.LastInCombo = LastInCombo;
-                        b.Ar = Ar;
-                        b.Cs = Cs;
+                        s.NewCombo = NewCombo;
+                        s.IndexInCurrentCombo = IndexInCurrentCombo;
+                        s.ComboIndex = ComboIndex;
+                        s.LastInCombo = LastInCombo;
 
-                        AddNested(b);
+                        s.StartTime = StartTime + repeat * SpanDuration;
+                        s.Position = Position + Curve.PositionAt(repeat % 2);
+                        AddNested(s);
                     }
-                }
-            }
-            else
-            {
-                IEnumerable<Bullet> bullets = createPattern();
-
-                foreach (Bullet b in bullets)
-                {
-                    b.Ar = Ar;
-                    b.Cs = Cs;
-
-                    b.NewCombo = NewCombo;
-                    b.IndexInCurrentCombo = IndexInCurrentCombo;
-                    b.ComboIndex = ComboIndex;
-                    b.LastInCombo = LastInCombo;
-
-                    AddNested(b);
                 }
             }
         }
