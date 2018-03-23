@@ -67,7 +67,7 @@ namespace osu.Game.Rulesets.Vitaru.UI
 
             float randomScaleValue = (float)RNG.NextDouble(50, 100) / 500;
             Scale = new Vector2(randomScaleValue);
-            this.ScaleTo(new Vector2(0.001f), 3000);
+            this.ScaleTo(new Vector2(0.01f), 3000);
         }
 
         protected override void Update()
@@ -76,8 +76,12 @@ namespace osu.Game.Rulesets.Vitaru.UI
 
             this.MoveToOffset(new Vector2(randomMovementXValue * ((float)Clock.ElapsedFrameTime / 1000), randomMovementYValue * ((float)Clock.ElapsedFrameTime / 1000)));
 
-            if (Position.X > width + 60 || Scale.X <= 0.005f || Position.X < -60)
-                Expire();
+            if (Position.X > width + 60 || Scale.X <= 0.01f || Position.X < -60)
+            {
+                AlwaysPresent = true;
+                this.FadeOut(200)
+                    .Expire();
+            }
         }
     }
 }

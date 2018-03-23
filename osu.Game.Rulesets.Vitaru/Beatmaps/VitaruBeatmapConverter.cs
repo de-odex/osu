@@ -8,12 +8,15 @@ using System;
 using osu.Game.Audio;
 using System.Linq;
 using osu.Game.Rulesets.Vitaru.Settings;
+using osu.Framework.Configuration;
 
 namespace osu.Game.Rulesets.Vitaru.Beatmaps
 {
     internal class VitaruBeatmapConverter : BeatmapConverter<VitaruHitObject>
     {
-        private VitaruGamemode currentGameMode = VitaruSettings.VitaruConfigManager.GetBindable<VitaruGamemode>(VitaruSetting.GameMode);
+        private readonly VitaruGamemode currentGameMode = VitaruSettings.VitaruConfigManager.GetBindable<VitaruGamemode>(VitaruSetting.GameMode);
+        private readonly bool multiplayer = VitaruSettings.VitaruConfigManager.GetBindable<bool>(VitaruSetting.ShittyMultiplayer);
+        private readonly int enemyPlayerCount = VitaruSettings.VitaruConfigManager.GetBindable<int>(VitaruSetting.EnemyPlayerCount);
 
         public static List<HitObject> HitObjectList = new List<HitObject>();
 
@@ -112,7 +115,9 @@ namespace osu.Game.Rulesets.Vitaru.Beatmaps
                 }
             }
 
-            HitObjectList.Add(p);
+            if (multiplayer && enemyPlayerCount > 0)
+                HitObjectList.Add(p);
+
             yield return p;
         }
 
