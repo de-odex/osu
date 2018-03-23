@@ -79,7 +79,7 @@ namespace osu.Game.Rulesets.Vitaru.Beatmaps
                 }
                 else
                 {
-                    p.PatternID = 2;
+                    p.PatternID = 1;
                 }
             }
             else if (endTimeData != null)
@@ -100,7 +100,7 @@ namespace osu.Game.Rulesets.Vitaru.Beatmaps
                 }
                 else if (isFinish)
                 {
-                    p.PatternID = 1;
+                    p.PatternID = 4;
                 }
                 else if (isClap)
                 {
@@ -108,7 +108,7 @@ namespace osu.Game.Rulesets.Vitaru.Beatmaps
                 }
                 else
                 {
-                    p.PatternID = 4;
+                    p.PatternID = 1;
                 }
             }
 
