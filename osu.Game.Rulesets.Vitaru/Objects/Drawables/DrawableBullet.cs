@@ -9,6 +9,7 @@ using osu.Game.Rulesets.Vitaru.UI;
 using osu.Framework.Graphics.Containers;
 using osu.Game.Rulesets.Scoring;
 using Symcol.Core.GameObjects;
+using osu.Game.Rulesets.Objects.Drawables;
 
 namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
 {
@@ -54,7 +55,7 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
         private bool started;
         private bool loaded;
 
-        public DrawableBullet(Container parent, Bullet bullet, DrawablePattern drawablePattern) : base(bullet, parent)
+        public DrawableBullet(Bullet bullet, DrawablePattern drawablePattern, VitaruPlayfield playfield) : base(bullet, playfield)
         {
             AlwaysPresent = true;
             Alpha = 0;
@@ -69,9 +70,11 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
 
             if (currentGameMode == VitaruGamemode.Dodge)
                 BulletBounds = new Vector4(-10, -10, 522, 394);
+
+            load();
         }
 
-        public DrawableBullet(Container parent, Bullet bullet) : base(bullet, parent)
+        public DrawableBullet(Bullet bullet, VitaruPlayfield playfield) : base(bullet, playfield)
         {
             AlwaysPresent = true;
             Alpha = 0;
@@ -85,68 +88,24 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
 
             if (currentGameMode == VitaruGamemode.Dodge)
                 BulletBounds = new Vector4(-10, -10, 522, 394);
+
+            load();
         }
 
-        /// <summary>
-        /// Called 1 second before the bullet's starttime
-        /// </summary>
         private void load()
         {
-            if (!loaded)
+            Size = new Vector2(Bullet.BulletDiameter);
+            Scale = new Vector2(0.1f);
+
+            Children = new Drawable[]
             {
-                loaded = true;
-
-                Size = new Vector2(Bullet.BulletDiameter);
-                Scale = new Vector2(0.1f);
-
-                Children = new Drawable[]
+                bulletPiece = new BulletPiece(this),
+                Hitbox = new SymcolHitbox(new Vector2(Bullet.BulletDiameter), Shape.Circle)
                 {
-                    bulletPiece = new BulletPiece(this),
-                    Hitbox = new SymcolHitbox(new Vector2(Bullet.BulletDiameter), Shape.Circle)
-                    {
-                        Team = Bullet.Team,
-                        HitDetection = false
-                    }
-                };
-            }
-        }
-
-        /// <summary>
-        /// Called to unload the bullet for storage
-        /// </summary>
-        private void unload()
-        {
-            if (loaded)
-            {
-                loaded = false;
-                started = false;
-                returnJudgement = false;
-                BulletDeleteTime = -1;
-                Alpha = 0;
-
-                Remove(bulletPiece);
-                bulletPiece.Dispose();
-                Remove(Hitbox);
-                Hitbox.Dispose();
-                ParentContainer.Remove(this);
-                Dispose();
-            }
-        }
-
-        /// <summary>
-        /// Called once when the bullet starts
-        /// </summary>
-        private void start()
-        {
-            if (!started)
-            {
-                Position = Bullet.Position;
-                Hitbox.HitDetection = true;
-                started = true;
-                this.FadeInFromZero(100);
-                this.ScaleTo(Vector2.One, 100);
-                BulletVelocity = getBulletVelocity();
-            }
+                    Team = Bullet.Team,
+                    HitDetection = false
+                }
+            };
         }
 
         protected override void CheckForJudgements(bool userTriggered, double timeOffset)
@@ -215,16 +174,10 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
             }
 
             else if (Hit)
-            {
                 AddJudgement(new VitaruJudgement { Result = HitResult.Miss });
-                unload();
-            }
 
             else if (ReturnGreat)
-            {
                 AddJudgement(new VitaruJudgement { Result = HitResult.Great });
-                unload();
-            }
         }
 
         protected override void Dispose(bool isDisposing)
@@ -249,16 +202,8 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
                 OnHit = null;
             }
 
-            if (Position.Y >= BulletBounds.Y | Position.X >= BulletBounds.X | Position.Y <= BulletBounds.W | Position.X <= BulletBounds.Z && Time.Current >= Bullet.StartTime || !Bullet.ObeyBoundries && Time.Current >= Bullet.StartTime)
-                load();
-
-            if (BulletDeleteTime <= Time.Current && BulletDeleteTime != -1 || Time.Current < Bullet.StartTime)
-                unload();
-
             if (Time.Current >= Bullet.StartTime)
             {
-                start();
-
                 if (Bullet.DynamicBulletVelocity)
                     BulletVelocity = getBulletVelocity();
 
@@ -266,11 +211,44 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
                 Position += new Vector2(BulletVelocity.X * BulletSpeedModifier * frameTime, BulletVelocity.Y * BulletSpeedModifier * frameTime);
 
                 if (Bullet.ObeyBoundries && Position.Y < BulletBounds.Y | Position.X < BulletBounds.X | Position.Y > BulletBounds.W | Position.X > BulletBounds.Z && !returnJudgement)
-                {
                     returnJudgement = true;
-                    BulletDeleteTime = Time.Current + TIME_FADEOUT / 12;
-                    this.FadeOutFromOne(TIME_FADEOUT / 12);
-                }
+            }
+        }
+
+        protected override void UpdatePreemptState()
+        {
+            base.UpdatePreemptState();
+
+            Position = Bullet.Position;
+            Hitbox.HitDetection = true;
+            started = true;
+            this.FadeInFromZero(100);
+            this.ScaleTo(Vector2.One, 100);
+            BulletVelocity = getBulletVelocity();
+        }
+
+        protected override void UpdateCurrentState(ArmedState state)
+        {
+            switch (state)
+            {
+                case ArmedState.Idle:
+                    this.Delay(HitObject.TimePreempt).FadeOut(500);
+
+                    Expire(true);
+
+                    // override lifetime end as FadeIn may have been changed externally, causing out expiration to be too early.
+                    LifetimeEnd = double.MaxValue;
+                    break;
+                case ArmedState.Miss:
+                    LifetimeEnd = Time.Current + HitObject.TimePreempt / 6;
+                    this.FadeOutFromOne(HitObject.TimePreempt / 6);
+                    Expire();
+                    break;
+                case ArmedState.Hit:
+                    LifetimeEnd = Time.Current + HitObject.TimePreempt / 6;
+                    this.FadeOutFromOne(HitObject.TimePreempt / 6);
+                    Expire();
+                    break;
             }
         }
     }
