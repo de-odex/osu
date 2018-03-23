@@ -117,7 +117,6 @@ namespace osu.Game.Rulesets.Vitaru.Objects
                         b.NewCombo = NewCombo;
                         b.Ar = Ar;
                         b.Cs = Cs;
-                        b.StackHeight = StackHeight;
 
                         AddNested(b);
                     }
@@ -131,7 +130,6 @@ namespace osu.Game.Rulesets.Vitaru.Objects
                 {
                     b.Ar = Ar;
                     b.Cs = Cs;
-                    b.StackHeight = StackHeight;
 
                     b.NewCombo = NewCombo;
                     b.IndexInCurrentCombo = IndexInCurrentCombo;

@@ -17,7 +17,7 @@ namespace osu.Game.Rulesets.Vitaru.Objects
             double directionModifier = ((Math.PI / 2) / bulletCount);
             double direction = angle - Math.PI / 4;
 
-            for (int i = 0; i <= bulletCount; i++)
+            for (int i = 1; i <= bulletCount; i++)
             {
                 bullets.Add(new Bullet
                 {

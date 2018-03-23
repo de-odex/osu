@@ -268,12 +268,7 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
             PlaySamples();
             foreach (var o in NestedHitObjects)
                 if (o is DrawableBullet b && b.Bullet.StartTime <= Time.Current)
-                {
                     b.Position = Position;
-
-                    if (b.Bullet.ShootPlayer)
-                        b.Bullet.BulletAngle += pattern.PlayerRelativePositionAngle(VitaruPlayfield.VitaruPlayer.Position, b.Position) - Math.PI / 2;
-                }
         }
 
         /// <summary>
