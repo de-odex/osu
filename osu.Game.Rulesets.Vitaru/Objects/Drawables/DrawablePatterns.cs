@@ -7,8 +7,6 @@ using osu.Game.Rulesets.Vitaru.Settings;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Shapes;
 using osu.Framework.Extensions.Color4Extensions;
-using osu.Game.Rulesets.Objects.Drawables;
-using osu.Game.Rulesets.Scoring;
 
 namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
 {
@@ -181,6 +179,8 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
 
             enemy.Dispose();
             energyCircle.Dispose();
+
+            Expire();
         }
 
         private Vector2 getPatternStartPosition()

@@ -6,10 +6,8 @@ using osu.Game.Rulesets.Vitaru.Judgements;
 using osu.Game.Rulesets.Vitaru.Settings;
 using osu.Game.Rulesets.Vitaru.Scoring;
 using osu.Game.Rulesets.Vitaru.UI;
-using osu.Framework.Graphics.Containers;
 using osu.Game.Rulesets.Scoring;
 using Symcol.Core.GameObjects;
-using osu.Game.Rulesets.Objects.Drawables;
 
 namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
 {
