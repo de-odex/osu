@@ -47,12 +47,12 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
 
             if (Time.Current >= HitObject.StartTime - HitObject.TimePreempt && !Loaded && Time.Current < HitObject.EndTime + HitObject.TimePreempt * 2)
                 Load();
-            else if (Loaded)
+            else if (Time.Current < HitObject.StartTime - HitObject.TimePreempt && Loaded && Time.Current >= HitObject.EndTime + HitObject.TimePreempt * 2)
                 Unload();
 
             if (Time.Current >= HitObject.StartTime && !Started && Time.Current < HitObject.EndTime)
                 Start();
-            else if(Started)
+            else if (Time.Current < HitObject.StartTime && Started && Time.Current >= HitObject.EndTime)
                 End();
         }
 
