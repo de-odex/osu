@@ -57,13 +57,13 @@ namespace osu.Game.Rulesets.Vitaru.Beatmaps
             };
 
             if (original is IHasCurve curveData)
-            {/*
+            {
                 p.IsSlider = true;
                 p.ControlPoints = curveData.ControlPoints;
                 p.CurveType = curveData.CurveType;
                 p.Distance = curveData.Distance;
                 p.RepeatSamples = curveData.RepeatSamples;
-                p.RepeatCount = curveData.RepeatCount;*/
+                p.RepeatCount = curveData.RepeatCount;
 
                 p.EnemyHealth = 60;
 
@@ -85,7 +85,7 @@ namespace osu.Game.Rulesets.Vitaru.Beatmaps
                     p.PatternID = 1;
                 }
             }
-            else if (false)//endTimeData != null)
+            else if (endTimeData != null)
             {
                 p.IsSpinner = true;
                 p.PatternSpeed = 0.3f;

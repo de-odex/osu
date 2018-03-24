@@ -144,6 +144,7 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
             else if (Hit)
             {
                 AddJudgement(new VitaruJudgement { Result = HitResult.Miss });
+                bulletPiece.Alpha = 0;
                 End();
             }
 

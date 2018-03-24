@@ -20,6 +20,10 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
         private readonly Pattern pattern;
         private Container energyCircle;
 
+        private bool done;
+
+        private int currentRepeat;
+
         private readonly double endTime;
         
         private Enemy enemy;
@@ -41,20 +45,35 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
             PatternCount++;
         }
 
-        private Vector2 getPatternStartPosition()
+        protected override void Update()
         {
-            Vector2 patternStartPosition;
+            base.Update();
 
-            if (pattern.Position.X <= 384f / 2 && pattern.Position.Y <= 512f / 2)
-                patternStartPosition = pattern.Position - new Vector2(384f / 2, 512f / 2);
-            else if (pattern.Position.X > 384f / 2 && pattern.Position.Y <= 512f / 2)
-                patternStartPosition = new Vector2(pattern.Position.X + 384f / 2, pattern.Position.Y - 512f / 2);
-            else if (pattern.Position.X > 384f / 2 && pattern.Position.Y > 512f / 2)
-                patternStartPosition = pattern.Position + new Vector2(384f / 2, 512f / 2);
-            else
-                patternStartPosition = new Vector2(pattern.Position.X - 384f / 2, pattern.Position.Y + 512f / 2);
+            if (pattern.IsSlider)
+            {
+                double completionProgress = MathHelper.Clamp((Time.Current - pattern.StartTime) / pattern.Duration, 0, 1);
+                int repeat = pattern.RepeatAt(completionProgress);
 
-            return patternStartPosition;
+                if (Started && !done)
+                {
+                    energyCircle.Position = pattern.PositionAt(completionProgress);
+                    if (currentGameMode != VitaruGamemode.Dodge)
+                        enemy.Position = pattern.PositionAt(completionProgress);
+                }
+
+                if (repeat > currentRepeat)
+                {
+                    if (repeat < pattern.RepeatCount)
+                        PlaySamples();
+                    currentRepeat = repeat;
+                }
+
+                if (pattern.EndTime <= Time.Current && Started && !done)
+                {
+                    PlaySamples();
+                    done = true;
+                }
+            }
         }
 
         protected override void Load()
@@ -162,6 +181,22 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
 
             enemy.Dispose();
             energyCircle.Dispose();
+        }
+
+        private Vector2 getPatternStartPosition()
+        {
+            Vector2 patternStartPosition;
+
+            if (pattern.Position.X <= 384f / 2 && pattern.Position.Y <= 512f / 2)
+                patternStartPosition = pattern.Position - new Vector2(384f / 2, 512f / 2);
+            else if (pattern.Position.X > 384f / 2 && pattern.Position.Y <= 512f / 2)
+                patternStartPosition = new Vector2(pattern.Position.X + 384f / 2, pattern.Position.Y - 512f / 2);
+            else if (pattern.Position.X > 384f / 2 && pattern.Position.Y > 512f / 2)
+                patternStartPosition = pattern.Position + new Vector2(384f / 2, 512f / 2);
+            else
+                patternStartPosition = new Vector2(pattern.Position.X - 384f / 2, pattern.Position.Y + 512f / 2);
+
+            return patternStartPosition;
         }
 
         protected override void Dispose(bool isDisposing)
