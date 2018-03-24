@@ -80,6 +80,8 @@ namespace osu.Game.Rulesets.Vitaru.Objects
 
             if (IsSlider)
                 EndTime = StartTime + this.SpanCount() * Curve.Distance / Velocity;
+            else if (!IsSpinner)
+                EndTime = StartTime;
         }
         #endregion
 

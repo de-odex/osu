@@ -45,14 +45,14 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
         {
             base.Update();
 
-            if (Time.Current >= HitObject.StartTime - HitObject.TimePreempt && !Loaded && Time.Current < HitObject.EndTime + HitObject.TimePreempt * 2)
+            if (Time.Current >= HitObject.StartTime - HitObject.TimePreempt && Time.Current < HitObject.EndTime + HitObject.TimePreempt * 2 && !Loaded)
                 Load();
-            else if (Time.Current < HitObject.StartTime - HitObject.TimePreempt && Loaded && Time.Current >= HitObject.EndTime + HitObject.TimePreempt * 2)
+            else if (Time.Current < HitObject.StartTime - HitObject.TimePreempt | Time.Current >= HitObject.EndTime + HitObject.TimePreempt * 2 && Loaded)
                 Unload();
 
-            if (Time.Current >= HitObject.StartTime && !Started && Time.Current < HitObject.EndTime)
+            if (Time.Current >= HitObject.StartTime && Time.Current < HitObject.EndTime && !Started)
                 Start();
-            else if (Time.Current < HitObject.StartTime && Started && Time.Current >= HitObject.EndTime)
+            else if (Time.Current < HitObject.StartTime | Time.Current >= HitObject.EndTime && Started)
                 End();
         }
 

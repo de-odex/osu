@@ -46,6 +46,8 @@ namespace osu.Game.Rulesets.Vitaru.Objects
                         };
                         break;
                 }
+                EndTime = StartTime + Curve.Distance / Velocity;
+
             }
         }
 

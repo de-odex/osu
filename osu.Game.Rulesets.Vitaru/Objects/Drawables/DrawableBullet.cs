@@ -76,24 +76,6 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
                 BulletBounds = new Vector4(-10, -10, 522, 394);
         }
 
-        protected override void Load()
-        {
-            base.Load();
-
-            Size = new Vector2(Bullet.BulletDiameter);
-            Scale = new Vector2(0.1f);
-
-            Children = new Drawable[]
-            {
-                bulletPiece = new BulletPiece(this),
-                Hitbox = new SymcolHitbox(new Vector2(Bullet.BulletDiameter), Shape.Circle)
-                {
-                    Team = Bullet.Team,
-                    HitDetection = false
-                }
-            };
-        }
-
         protected override void CheckForJudgements(bool userTriggered, double timeOffset)
         {
             base.CheckForJudgements(userTriggered, timeOffset);
@@ -160,10 +142,16 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
             }
 
             else if (Hit)
+            {
                 AddJudgement(new VitaruJudgement { Result = HitResult.Miss });
+                End();
+            }
 
             else if (ReturnGreat)
+            {
                 AddJudgement(new VitaruJudgement { Result = HitResult.Great });
+                End();
+            }
         }
 
         protected override void Update()
@@ -183,15 +171,34 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
                 Position = Bullet.PositionAt(completionProgress);
 
                 if (Bullet.ObeyBoundries && Position.Y < BulletBounds.Y | Position.X < BulletBounds.X | Position.Y > BulletBounds.W | Position.X > BulletBounds.Z && !returnJudgement)
-                    returnJudgement = true;
+                    End();
             }
+        }
+
+        protected override void Load()
+        {
+            base.Load();
+
+            Alpha = 0;
+            Size = new Vector2(Bullet.BulletDiameter);
+            Scale = new Vector2(0.1f);
+
+            Children = new Drawable[]
+            {
+                bulletPiece = new BulletPiece(this),
+                Hitbox = new SymcolHitbox(new Vector2(Bullet.BulletDiameter), Shape.Circle)
+                {
+                    Team = Bullet.Team,
+                    HitDetection = false
+                }
+            };
         }
 
         protected override void Start()
         {
             base.Start();
 
-            Position = Bullet.Position;
+            Position = Bullet.PositionAt(0);
             Hitbox.HitDetection = true;
             this.FadeInFromZero(100)
                 .ScaleTo(Vector2.One, 100);
@@ -200,8 +207,22 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
         protected override void End()
         {
             base.End();
+            bulletPiece.FadeOut(100);
+            returnJudgement = true;
+        }
 
-            Expire();
+        protected override void Unload()
+        {
+            base.Unload();
+
+            Remove(bulletPiece);
+            Remove(Hitbox);
+
+            bulletPiece.Dispose();
+            Hitbox.Dispose();
+
+            VitaruPlayfield.BulletField.Remove(this);
+            Dispose();
         }
 
         protected override void Dispose(bool isDisposing)

@@ -65,7 +65,7 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
             {
                 Alpha = 0,
                 Masking = true,
-                Anchor = Anchor.Centre,
+                Anchor = Anchor.TopLeft,
                 Origin = Anchor.Centre,
                 Size = new Vector2(30),
                 CornerRadius = 30f / 2,
@@ -93,7 +93,7 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
                 VitaruPlayfield.CharacterField.Add(enemy = new Enemy(VitaruPlayfield, pattern, this)
                 {
                     Alpha = 0,
-                    Anchor = Anchor.Centre,
+                    Anchor = Anchor.TopLeft,
                     Origin = Anchor.Centre,
                     Depth = 5,
                     MaxHealth = pattern.EnemyHealth,
@@ -105,11 +105,14 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
                     .MoveTo(pattern.Position, HitObject.TimePreempt);
             }
             else
-                energyCircle.Alpha = 1;
+            {
+                energyCircle.Alpha = 0;
+                energyCircle.FadeIn(Math.Min(HitObject.TimeFadein * 2, HitObject.TimePreempt))
+                    .MoveTo(pattern.Position, HitObject.TimePreempt);
+            }
 
             energyCircle.Position = getPatternStartPosition();
-            energyCircle.FadeIn(Math.Min(HitObject.TimeFadein * 2, HitObject.TimePreempt))
-                .MoveTo(pattern.Position, HitObject.TimePreempt);
+
 
             Position = pattern.Position;
             Size = new Vector2(64);
@@ -148,6 +151,17 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
             energyCircle.FadeOut(HitObject.TimePreempt / 2)
                 .ScaleTo(new Vector2(0.1f), HitObject.TimePreempt / 2)
                 .Expire();
+        }
+
+        protected override void Unload()
+        {
+            base.Unload();
+
+            VitaruPlayfield.CharacterField.Remove(enemy);
+            VitaruPlayfield.CharacterField.Remove(energyCircle);
+
+            enemy.Dispose();
+            energyCircle.Dispose();
         }
 
         protected override void Dispose(bool isDisposing)
