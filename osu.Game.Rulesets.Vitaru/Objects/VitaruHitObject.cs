@@ -21,15 +21,7 @@ namespace osu.Game.Rulesets.Vitaru.Objects
 
         public double EndTime { get; set; }
 
-        public Vector2 StackedPosition => Position;
-
         public virtual Vector2 EndPosition => Position;
-
-        public Vector2 StackedEndPosition => EndPosition;
-
-        public virtual int StackHeight { get; set; }
-
-        public Vector2 StackOffset => new Vector2(0,0);
 
         public float Scale { get; set; } = 1;
 

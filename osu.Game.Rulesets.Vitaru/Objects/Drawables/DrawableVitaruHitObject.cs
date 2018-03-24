@@ -21,9 +21,6 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
             VitaruPlayfield = playfield;
 
             AlwaysPresent = true;
-
-            //LifetimeStart = hitObject.StartTime - hitObject.TimePreempt;
-            //LifetimeEnd = hitObject.EndTime + hitObject.TimePreempt * 2;
         }
 
         protected override void SkinChanged(ISkinSource skin, bool allowFallback)

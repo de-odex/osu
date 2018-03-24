@@ -197,6 +197,13 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
                 .ScaleTo(Vector2.One, 100);
         }
 
+        protected override void End()
+        {
+            base.End();
+
+            Expire();
+        }
+
         protected override void Dispose(bool isDisposing)
         {
             BulletCount--;

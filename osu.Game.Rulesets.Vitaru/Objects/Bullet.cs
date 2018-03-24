@@ -54,7 +54,6 @@ namespace osu.Game.Rulesets.Vitaru.Objects
         public List<List<SampleInfo>> RepeatSamples { get; set; } = new List<List<SampleInfo>>();
         public bool IsSlider { get; set; } = false;
         private const float base_scoring_distance = 100;
-        public double EndTime => StartTime + Curve.Distance / Velocity;
         public double Duration => EndTime - StartTime;
         public SliderCurve Curve { get; private set; } = new SliderCurve();
         public double Velocity => BulletSpeed;
@@ -86,6 +85,7 @@ namespace osu.Game.Rulesets.Vitaru.Objects
         {
             base.ApplyDefaultsToSelf(controlPointInfo, difficulty);
 
+            EndTime = StartTime + Curve.Distance / Velocity;
             SliderType = SliderType.Straight;
         }
     }
