@@ -19,6 +19,8 @@ namespace osu.Game.Rulesets.Vitaru.Objects
 
         public Vector2 Position { get; set; }
 
+        public double EndTime { get; set; }
+
         public Vector2 StackedPosition => Position;
 
         public virtual Vector2 EndPosition => Position;

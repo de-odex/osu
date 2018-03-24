@@ -49,9 +49,6 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
 
         private BulletPiece bulletPiece;
 
-        private bool started;
-        private bool loaded;
-
         public DrawableBullet(Bullet bullet, DrawablePattern drawablePattern, VitaruPlayfield playfield) : base(bullet, playfield)
         {
             Anchor = Anchor.TopLeft;
@@ -64,8 +61,6 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
 
             if (currentGameMode == VitaruGamemode.Dodge)
                 BulletBounds = new Vector4(-10, -10, 522, 394);
-
-            load();
         }
 
         public DrawableBullet(Bullet bullet, VitaruPlayfield playfield) : base(bullet, playfield)
@@ -79,12 +74,12 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
 
             if (currentGameMode == VitaruGamemode.Dodge)
                 BulletBounds = new Vector4(-10, -10, 522, 394);
-
-            load();
         }
 
-        private void load()
+        protected override void Load()
         {
+            base.Load();
+
             Size = new Vector2(Bullet.BulletDiameter);
             Scale = new Vector2(0.1f);
 
@@ -171,12 +166,6 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
                 AddJudgement(new VitaruJudgement { Result = HitResult.Great });
         }
 
-        protected override void Dispose(bool isDisposing)
-        {
-            BulletCount--;
-            base.Dispose(isDisposing);
-        }
-
         protected override void Update()
         {
             base.Update();
@@ -198,41 +187,20 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
             }
         }
 
-        protected override void UpdatePreemptState()
+        protected override void Start()
         {
-            base.UpdatePreemptState();
+            base.Start();
 
             Position = Bullet.Position;
             Hitbox.HitDetection = true;
-            started = true;
             this.FadeInFromZero(100)
                 .ScaleTo(Vector2.One, 100);
         }
 
-        protected override void UpdateCurrentState(ArmedState state)
+        protected override void Dispose(bool isDisposing)
         {
-            if (!Bullet.DummyMode)
-                switch (state)
-                {
-                    case ArmedState.Idle:
-                        this.Delay(HitObject.TimePreempt).FadeOut(500);
-
-                        Expire(true);
-
-                        // override lifetime end as FadeIn may have been changed externally, causing out expiration to be too early.
-                        LifetimeEnd = double.MaxValue;
-                        break;
-                    case ArmedState.Miss:
-                        LifetimeEnd = Time.Current + HitObject.TimePreempt / 6;
-                        this.FadeOutFromOne(HitObject.TimePreempt / 6);
-                        Expire();
-                        break;
-                    case ArmedState.Hit:
-                        LifetimeEnd = Time.Current + HitObject.TimePreempt / 6;
-                        this.FadeOutFromOne(HitObject.TimePreempt / 6);
-                        Expire();
-                        break;
-                }
+            BulletCount--;
+            base.Dispose(isDisposing);
         }
     }
 }

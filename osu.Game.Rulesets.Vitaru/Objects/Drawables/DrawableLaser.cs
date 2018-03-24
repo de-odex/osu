@@ -41,9 +41,6 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
         private const float fade_in_time = 200;
         private const float fade_out_time = 200;
 
-        private bool started;
-        private bool loaded;
-
         public DrawableLaser(Laser laser, DrawablePattern drawablePattern, VitaruPlayfield playfield) : base(laser, playfield)
         {
             AlwaysPresent = true;

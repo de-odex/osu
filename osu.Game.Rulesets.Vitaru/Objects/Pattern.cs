@@ -88,7 +88,6 @@ namespace osu.Game.Rulesets.Vitaru.Objects
         /// </summary>
         #region Spinner
         public bool IsSpinner { get; set; }
-        public double EndTime { get; set; }
         #endregion
 
         #region Bullet Loading

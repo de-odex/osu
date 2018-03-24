@@ -4,8 +4,6 @@ using System.ComponentModel;
 using osu.Game.Rulesets.Objects.Types;
 using osu.Game.Skinning;
 using OpenTK.Graphics;
-using System.Linq;
-using osu.Framework.Graphics;
 using osu.Game.Rulesets.Vitaru.UI;
 
 namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
@@ -14,11 +12,18 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
     {
         protected readonly VitaruPlayfield VitaruPlayfield;
 
+        protected bool Loaded { get; private set; }
+
+        protected bool Started { get; private set; }
+
         public DrawableVitaruHitObject(VitaruHitObject hitObject, VitaruPlayfield playfield) : base(hitObject)
         {
             VitaruPlayfield = playfield;
 
-            Alpha = 0;
+            AlwaysPresent = true;
+
+            //LifetimeStart = hitObject.StartTime - hitObject.TimePreempt;
+            //LifetimeEnd = hitObject.EndTime + hitObject.TimePreempt * 2;
         }
 
         protected override void SkinChanged(ISkinSource skin, bool allowFallback)
@@ -37,21 +42,30 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
 
             base.ApplyTransformsAt(transformTime, true);
             base.ClearTransformsAfter(transformTime, true);
-
-            using (BeginAbsoluteSequence(transformTime, true))
-            {
-                UpdatePreemptState();
-
-                using (BeginDelayedSequence(HitObject.TimePreempt, true))
-                    UpdateCurrentState(state);
-            }
         }
 
-        protected virtual void UpdatePreemptState() => this.FadeIn(HitObject.TimeFadein);
-
-        protected virtual void UpdateCurrentState(ArmedState state)
+        protected override void Update()
         {
+            base.Update();
+
+            if (Time.Current >= HitObject.StartTime - HitObject.TimePreempt && !Loaded && Time.Current < HitObject.EndTime + HitObject.TimePreempt * 2)
+                Load();
+            else if (Loaded)
+                Unload();
+
+            if (Time.Current >= HitObject.StartTime && !Started && Time.Current < HitObject.EndTime)
+                Start();
+            else if(Started)
+                End();
         }
+
+        protected virtual void Load() { Loaded = true; }
+
+        protected virtual void Start() { Started = true; }
+
+        protected virtual void End() { Started = false; }
+
+        protected virtual void Unload() { Loaded = false; }
     }
 
     public enum ComboResult

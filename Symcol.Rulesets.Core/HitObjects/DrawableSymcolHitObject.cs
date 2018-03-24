@@ -1,13 +1,9 @@
-﻿using OpenTK.Graphics;
-using osu.Framework.Graphics;
+﻿using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Game.Rulesets.Objects;
 using osu.Game.Rulesets.Objects.Drawables;
-using osu.Game.Rulesets.Objects.Types;
-using osu.Game.Skinning;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Symcol.Rulesets.Core.HitObjects
 {
@@ -73,16 +69,6 @@ namespace Symcol.Rulesets.Core.HitObjects
             else
                 ClearInternal(disposeChildren);
         }
-        #endregion
-
-        protected DrawableSymcolHitObject(TObject hitObject)
-    : base(hitObject)
-        { }
-
-        // Todo: At some point we need to move these to DrawableHitObject after ensuring that all other Rulesets apply
-        // transforms in the same way and don't rely on them not being cleared
-        public override void ClearTransformsAfter(double time, bool propagateChildren = false, string targetMember = null) { }
-        public override void ApplyTransformsAt(double time, bool propagateChildren = false) { }
 
         public void Add(Drawable drawable)
         {
@@ -93,5 +79,15 @@ namespace Symcol.Rulesets.Core.HitObjects
         {
             RemoveInternal(drawable);
         }
+        #endregion
+
+        protected DrawableSymcolHitObject(TObject hitObject)
+    : base(hitObject)
+        { }
+
+        // Todo: At some point we need to move these to DrawableHitObject after ensuring that all other Rulesets apply
+        // transforms in the same way and don't rely on them not being cleared
+        public override void ClearTransformsAfter(double time, bool propagateChildren = false, string targetMember = null) { }
+        public override void ApplyTransformsAt(double time, bool propagateChildren = false) { }
     }
 }
