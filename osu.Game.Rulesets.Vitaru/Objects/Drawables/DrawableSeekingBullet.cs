@@ -4,6 +4,7 @@ using osu.Framework.Graphics.Containers;
 using osu.Game.Rulesets.Vitaru.Objects.Characters;
 using osu.Game.Rulesets.Vitaru.Objects.Drawables.Pieces;
 using osu.Game.Rulesets.Vitaru.Settings;
+using osu.Game.Rulesets.Vitaru.UI;
 using Symcol.Core.GameObjects;
 using System;
 
@@ -33,7 +34,7 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
         //Playfield size + Margin of 10 on each side
         public Vector4 BulletBounds = new Vector4(-10, -10, 520, 830);
 
-        public DrawableSeekingBullet(Container parent, SeekingBullet seekingBullet) : base(seekingBullet, parent)
+        public DrawableSeekingBullet(SeekingBullet seekingBullet, VitaruPlayfield playfield) : base(seekingBullet, playfield)
         {
             AlwaysPresent = true;
             Alpha = 0;
@@ -65,7 +66,7 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
 
         private void nearestEnemy()
         {
-            foreach (Drawable draw in ParentContainer.Children)
+            foreach (Drawable draw in VitaruPlayfield.CharacterField.Children)
             {
                 VitaruCharacter enemy = draw as VitaruCharacter;
                 if (enemy?.Hitbox != null && enemy.Hitbox.Team != SeekingBullet.Team)
@@ -118,8 +119,8 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
 
             if (SeekingBullet.ObeyBoundries && Position.Y < BulletBounds.Y | Position.X < BulletBounds.X | Position.Y > BulletBounds.W | Position.X > BulletBounds.Z && BulletDeleteTime == -1)
             {
-                BulletDeleteTime = Time.Current + TIME_FADEOUT / 12;
-                this.FadeOutFromOne(TIME_FADEOUT / 12);
+                BulletDeleteTime = Time.Current + HitObject.TimePreempt / 6;
+                this.FadeOutFromOne(HitObject.TimePreempt / 6);
             }
 
             //IdleTimer

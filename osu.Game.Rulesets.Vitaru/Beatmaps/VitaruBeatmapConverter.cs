@@ -8,7 +8,6 @@ using System;
 using osu.Game.Audio;
 using System.Linq;
 using osu.Game.Rulesets.Vitaru.Settings;
-using osu.Framework.Configuration;
 
 namespace osu.Game.Rulesets.Vitaru.Beatmaps
 {

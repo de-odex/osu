@@ -12,7 +12,6 @@ using osu.Framework.Graphics.Shapes;
 using osu.Framework.Extensions.Color4Extensions;
 using Container = osu.Framework.Graphics.Containers.Container;
 using Symcol.Core.GameObjects;
-using System.ComponentModel;
 using osu.Framework.Platform;
 
 namespace osu.Game.Rulesets.Vitaru.Objects.Characters
@@ -36,14 +35,11 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Characters
         public bool CanHeal = false;
         protected float LastX;
 
-        /// <summary>
-        /// Should be assigned to only in ctor, and is essential for hit detection
-        /// </summary>
-        public new readonly Container Parent;
+        protected readonly VitaruPlayfield VitaruPlayfield;
 
-        protected VitaruCharacter(Container parent)
+        protected VitaruCharacter(VitaruPlayfield vitaruPlayfield)
         {
-            Parent = parent;
+            VitaruPlayfield = vitaruPlayfield;
         }
 
         /// <summary>
@@ -116,7 +112,7 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Characters
             if (Health <= 0 && !Dead)
                 Death();
 
-            foreach (Drawable draw in Parent)
+            foreach (Drawable draw in VitaruPlayfield.BulletField)
             {
                 DrawableBullet bullet = draw as DrawableBullet;
                 if (bullet?.Hitbox != null)
@@ -241,9 +237,9 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Characters
                     Anchor = Anchor.Centre,
                     Origin = Anchor.Centre,
                     Alpha = 0,
-                    Size = new Vector2(HitboxWidth),
+                    Size = new Vector2(HitboxWidth + HitboxWidth / 4),
                     BorderColour = CharacterColor,
-                    BorderThickness = HitboxWidth / 3,
+                    BorderThickness = HitboxWidth / 4,
                     Masking = true,
 
                     Child = new Box
@@ -253,7 +249,7 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Characters
                     EdgeEffect = new EdgeEffectParameters
                     {
                         
-                        Radius = HitboxWidth,
+                        Radius = HitboxWidth / 2,
                         Type = EdgeEffectType.Shadow,
                         Colour = CharacterColor.Opacity(0.5f)
                     }

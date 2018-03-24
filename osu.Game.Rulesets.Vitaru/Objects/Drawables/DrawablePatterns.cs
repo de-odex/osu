@@ -16,23 +16,17 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
 
         public static int PatternCount;
         private readonly Pattern pattern;
-        private Vector2 patternStartPosition;
         private Container energyCircle;
 
-        private bool loaded;
-        private bool started;
         private bool done;
+
+        private int currentRepeat;
 
         private readonly double endTime;
         
-        private int currentRepeat;
-
         private Enemy enemy;
 
-        private bool prepedToPop;
-        private bool popped;
-
-        public DrawablePattern(Container parent, Pattern pattern) : base(pattern, parent)
+        public DrawablePattern(Pattern pattern, VitaruPlayfield playfield) : base(pattern, playfield)
         {
             AlwaysPresent = true;
 
@@ -40,136 +34,159 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
 
             if (!pattern.IsSlider && !pattern.IsSpinner)
             {
-                endTime = this.pattern.StartTime + TIME_FADEOUT;
+                endTime = this.pattern.StartTime + HitObject.TimePreempt * 2 - HitObject.TimeFadein;
                 this.pattern.EndTime = endTime;
             }
             else if (pattern.IsSlider)
-                endTime = this.pattern.EndTime + TIME_FADEOUT;
-        }
-
-        protected override void LoadComplete()
-        {
-            base.LoadComplete();
+                endTime = this.pattern.EndTime + HitObject.TimePreempt * 2 - HitObject.TimeFadein;
 
             PatternCount++;
-
-            LifetimeStart = pattern.StartTime - (TIME_PREEMPT + 1000f);
         }
 
-        //Should be called when a DrawablePattern is getting ready to become visable as to save on resources before hand
-        private void load()
+        protected override void Update()
         {
-            if (!loaded)
+            base.Update();
+
+            if (pattern.IsSlider)
             {
-                if (currentGameMode != VitaruGamemode.Dodge)
-                {
-                    //load the enemy
-                    ParentContainer.Add(enemy = new Enemy(ParentContainer, pattern, this)
-                    {
-                        Alpha = 0,
-                        Anchor = Anchor.Centre,
-                        Origin = Anchor.Centre,
-                        Depth = 5,
-                        MaxHealth = pattern.EnemyHealth,
-                        Team = 1
-                    });
+                double completionProgress = MathHelper.Clamp((Time.Current - pattern.StartTime) / pattern.Duration, 0, 1);
+                int repeat = pattern.RepeatAt(completionProgress);
 
-                    Child = energyCircle = new Container
-                    {
-                        Alpha = 0,
-                        Masking = true,
-                        Anchor = Anchor.Centre,
-                        Origin = Anchor.Centre,
-                        Size = new Vector2(30),
-                        CornerRadius = 30f / 2,
-                        BorderThickness = 10,
-                        BorderColour = AccentColour,
-                        Children = new Drawable[]
-                        {
-                            new Box
-                            {
-                                RelativeSizeAxes = Axes.Both
-                            }
-                        },
-                        EdgeEffect = new EdgeEffectParameters
-                        {
-                            Type = EdgeEffectType.Shadow,
-                            Colour = AccentColour.Opacity(0.5f),
-                            Radius = Width / 2,
-                        }
-                    };
-                    enemy.FadeInFromZero(TIME_FADEIN);
-                    enemy.Position = getPatternStartPosition();
-                    enemy.MoveTo(pattern.Position, TIME_PREEMPT);
-                }
-                else
+                if (Started && !done)
                 {
-                    Child = energyCircle = new CircularContainer
-                    {
-                        Masking = true,
-                        Anchor = Anchor.Centre,
-                        Origin = Anchor.Centre,
-                        Size = new Vector2(20),
-                        BorderThickness = 6,
-                        BorderColour = AccentColour,
-                        Children = new Drawable[]
-                        {
-                            new Box
-                            {
-                                RelativeSizeAxes = Axes.Both
-                            }
-                        },
-                        EdgeEffect = new EdgeEffectParameters
-                        {
-                            Type = EdgeEffectType.Shadow,
-                            Colour = AccentColour.Opacity(0.5f),
-                            Radius = Width / 2,
-                        }
-                    };
+                    energyCircle.Position = pattern.PositionAt(completionProgress);
+                    if (currentGameMode != VitaruGamemode.Dodge)
+                        enemy.Position = pattern.PositionAt(completionProgress);
                 }
 
-                Position = getPatternStartPosition();
-                this.MoveTo(pattern.Position, TIME_PREEMPT);
+                if (repeat > currentRepeat)
+                {
+                    if (repeat < pattern.RepeatCount + 1)
+                        PlaySamples();
+                    currentRepeat = repeat;
+                }
 
-                if (NestedHitObjects != null)
-                    foreach (var o in NestedHitObjects)
+                if (pattern.EndTime <= Time.Current && Started && !done)
+                {
+                    PlaySamples();
+                    done = true;
+                }
+            }
+        }
+
+        protected override void Load()
+        {
+            base.Load();
+
+            VitaruPlayfield.CharacterField.Add(energyCircle = new Container
+            {
+                Alpha = 0,
+                Masking = true,
+                Anchor = Anchor.TopLeft,
+                Origin = Anchor.Centre,
+                Size = new Vector2(30),
+                CornerRadius = 30f / 2,
+                BorderThickness = 10,
+                BorderColour = AccentColour,
+
+                Children = new Drawable[]
+                {
+                    new Box
                     {
-                        var b = (DrawableBullet)o;
-                        ParentContainer.Remove(b);
-                        b.Dispose();
+                        RelativeSizeAxes = Axes.Both
                     }
-
-                //Load the bullets
-                foreach (var o in pattern.NestedHitObjects)
+                },
+                EdgeEffect = new EdgeEffectParameters
                 {
-                    var b = (Bullet)o;
-                    DrawableBullet drawableBullet = new DrawableBullet(ParentContainer, b, this);
-                    ParentContainer.Add(drawableBullet);
-                    AddNested(drawableBullet);
+                    Type = EdgeEffectType.Shadow,
+                    Colour = AccentColour.Opacity(0.5f),
+                    Radius = Width / 2,
                 }
+            });
 
-                loaded = true;
+            if (currentGameMode != VitaruGamemode.Dodge)
+            {
+                //load the enemy
+                VitaruPlayfield.CharacterField.Add(enemy = new Enemy(VitaruPlayfield, pattern, this)
+                {
+                    Alpha = 0,
+                    Anchor = Anchor.TopLeft,
+                    Origin = Anchor.Centre,
+                    Depth = 5,
+                    MaxHealth = pattern.EnemyHealth,
+                    Team = 1,
+                });
+
+                enemy.Position = getPatternStartPosition();
+                enemy.FadeIn(Math.Min(HitObject.TimeFadein * 2, HitObject.TimePreempt))
+                    .MoveTo(pattern.Position, HitObject.TimePreempt);
+            }
+            else
+            {
+                energyCircle.Alpha = 0;
+                energyCircle.FadeIn(Math.Min(HitObject.TimeFadein * 2, HitObject.TimePreempt))
+                    .MoveTo(pattern.Position, HitObject.TimePreempt);
+            }
+
+            energyCircle.Position = getPatternStartPosition();
+
+
+            Position = pattern.Position;
+            Size = new Vector2(64);
+
+            //Load the bullets
+            foreach (var o in pattern.NestedHitObjects)
+            {
+                Bullet b = (Bullet)o;
+                DrawableBullet drawableBullet = new DrawableBullet(b, this, VitaruPlayfield);
+                VitaruPlayfield.BulletField.Add(drawableBullet);
+                AddNested(drawableBullet);
             }
         }
 
-        private void unload()
+        protected override void Start()
         {
-            if (loaded)
-            {
-                if (currentGameMode != VitaruGamemode.Dodge)
-                {
-                    ParentContainer.Remove(enemy);
-                    enemy.Dispose();
-                }
+            base.Start();
 
-                loaded = false;
-                started = false;
-                done = false;
-            }
+            PlaySamples();
+        }
+
+        protected override void End()
+        {
+            base.End();
+
+            if (currentGameMode != VitaruGamemode.Dodge)
+                enemy.MoveTo(getPatternStartPosition(), HitObject.TimePreempt * 2, Easing.InQuint)
+                    .Delay(HitObject.TimePreempt * 2 - HitObject.TimeFadein)
+                    .ScaleTo(new Vector2(0.5f), HitObject.TimeFadein, Easing.InQuint)
+                    .FadeOut(HitObject.TimeFadein, Easing.InQuint)
+                    .Expire();
+
+            this.MoveTo(getPatternStartPosition(), HitObject.TimePreempt * 2, Easing.InQuint)
+                .Expire();
+
+            energyCircle.FadeOut(HitObject.TimePreempt / 2)
+                .ScaleTo(new Vector2(0.1f), HitObject.TimePreempt / 2)
+                .Expire();
+        }
+
+        protected override void Unload()
+        {
+            base.Unload();
+
+            VitaruPlayfield.CharacterField.Remove(enemy);
+            VitaruPlayfield.CharacterField.Remove(energyCircle);
+
+            enemy.Dispose();
+            energyCircle.Dispose();
+
+            Expire();
         }
 
         private Vector2 getPatternStartPosition()
         {
+            Vector2 patternStartPosition;
+
             if (pattern.Position.X <= 384f / 2 && pattern.Position.Y <= 512f / 2)
                 patternStartPosition = pattern.Position - new Vector2(384f / 2, 512f / 2);
             else if (pattern.Position.X > 384f / 2 && pattern.Position.Y <= 512f / 2)
@@ -182,159 +199,10 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
             return patternStartPosition;
         }
 
-        protected override void Update()
-        {
-            base.Update();
-
-            //Used just to keep this Update(); function clean looking
-            generalUpdateLogic();
-
-            if (!pattern.IsSlider && !pattern.IsSpinner && loaded)
-                hitcircleUpdate();
-
-            if (pattern.IsSlider && loaded)
-                sliderUpdate();
-
-            if (pattern.IsSpinner && loaded)
-                spinnerUpdate();
-        }
-
-        private void generalUpdateLogic()
-        {
-            if (HitObject.StartTime - TIME_PREEMPT <= Time.Current && Time.Current < pattern.EndTime + TIME_FADEOUT)
-                load();
-
-            else
-                unload();
-
-            if (currentGameMode != VitaruGamemode.Dodge && prepedToPop && HitObject.StartTime <= Time.Current)
-                pop();
-        }
-
-        /// <summary>
-        /// Will leave and hide
-        /// </summary>
-        private void end()
-        {
-            if (energyCircle.Alpha <= 0)
-            {
-                if (currentGameMode != VitaruGamemode.Dodge)
-                    enemy.MoveTo(patternStartPosition, TIME_FADEOUT, Easing.InQuint);
-                this.MoveTo(patternStartPosition, TIME_FADEOUT, Easing.InQuint);
-                enemy.ScaleTo(new Vector2(0.5f), TIME_FADEOUT, Easing.InQuint);
-                enemy.FadeOut(TIME_FADEOUT, Easing.InQuint);
-            }
-            else
-            {
-                energyCircle.FadeOut(TIME_FADEOUT / 4);
-                energyCircle.ScaleTo(new Vector2(0.1f), TIME_FADEOUT / 4);
-            }
-        }
-
-        public void PrepPop()
-        {
-            if (!prepedToPop && !done)
-            {
-                double time = pattern.StartTime - Time.Current;
-
-                if (time < 0)
-                    time = 0;
-
-                energyCircle.FadeInFromZero(time);
-                energyCircle.ScaleTo(Vector2.One, time);
-                prepedToPop = true;
-            }
-        }
-
-        private void pop()
-        {
-            if (!popped)
-            {
-                enemy.FadeOut(100);
-                enemy.ScaleTo(new Vector2(1.2f), 100);
-                popped = true;
-            }
-        }
-
         protected override void Dispose(bool isDisposing)
         {
+            PatternCount--;
             base.Dispose(isDisposing);
-            if (isDisposing)
-                PatternCount--;
         }
-
-        /// <summary>
-        /// All the hitcircle stuff
-        /// </summary>
-        #region Hitcircle Stuff
-        private void hitcircleUpdate()
-        {
-            if (HitObject.StartTime <= Time.Current && !started)
-            {
-                started = true;
-                done = true;
-
-                PlaySamples();
-                end();
-            }
-        }
-        #endregion
-
-        /// <summary>
-        /// All The Slider Stuff
-        /// </summary>
-        #region Slider Stuff
-        private void sliderUpdate()
-        {
-            double completionProgress = MathHelper.Clamp((Time.Current - pattern.StartTime) / pattern.Duration, 0, 1);
-            int repeat = pattern.RepeatAt(completionProgress);
-
-            if (HitObject.StartTime <= Time.Current && !started)
-            {
-                PlaySamples();
-                started = true;
-            }
-
-            if (!done && started)
-            {
-                Position = pattern.PositionAt(completionProgress);
-                if (currentGameMode != VitaruGamemode.Dodge)
-                    enemy.Position = pattern.PositionAt(completionProgress);
-            }
-
-            if (repeat > currentRepeat)
-            {
-                if (repeat < pattern.RepeatCount)
-                    PlaySamples();
-                currentRepeat = repeat;
-            }
-
-            if (pattern.EndTime <= Time.Current && started && !done)
-            {
-                end();
-                PlaySamples();
-                done = true;
-            }
-        }
-        #endregion
-
-        /// <summary>
-        /// All the spinner stuff
-        /// </summary>
-        #region Spinner Stuff
-        private void spinnerUpdate()
-        {
-            if (pattern.StartTime <= Time.Current && !started)
-            {
-                PlaySamples();
-                started = true;
-            }
-            if (pattern.EndTime <= Time.Current)
-            {
-                done = true;
-                end();
-            }
-        }
-        #endregion
     }
 }

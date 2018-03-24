@@ -4,16 +4,24 @@ using System.ComponentModel;
 using osu.Game.Rulesets.Objects.Types;
 using osu.Game.Skinning;
 using OpenTK.Graphics;
+using osu.Game.Rulesets.Vitaru.UI;
 
 namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
 {
     public class DrawableVitaruHitObject : DrawableSymcolHitObject<VitaruHitObject>
     {
-        public static float TIME_PREEMPT = 600;
-        public static float TIME_FADEIN = 300;
-        public static float TIME_FADEOUT = 1200;
+        protected readonly VitaruPlayfield VitaruPlayfield;
 
-        public readonly Framework.Graphics.Containers.Container ParentContainer;
+        protected bool Loaded { get; private set; }
+
+        protected bool Started { get; private set; }
+
+        public DrawableVitaruHitObject(VitaruHitObject hitObject, VitaruPlayfield playfield) : base(hitObject)
+        {
+            VitaruPlayfield = playfield;
+
+            AlwaysPresent = true;
+        }
 
         protected override void SkinChanged(ISkinSource skin, bool allowFallback)
         {
@@ -25,19 +33,36 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
                 AccentColour = HitObject.ColorOverride;
         }
 
-        public DrawableVitaruHitObject(VitaruHitObject hitObject, Framework.Graphics.Containers.Container parent) : base(hitObject)
+        protected sealed override void UpdateState(ArmedState state)
         {
-            ParentContainer = parent;
+            double transformTime = HitObject.StartTime - HitObject.TimePreempt;
 
-            if (hitObject.Ar != -1)
-            {
-                TIME_PREEMPT = hitObject.Ar;
-                TIME_FADEOUT = hitObject.Ar * 2;
-                TIME_FADEIN = hitObject.Ar / 2;
-            }
+            base.ApplyTransformsAt(transformTime, true);
+            base.ClearTransformsAfter(transformTime, true);
         }
 
-        protected sealed override void UpdateState(ArmedState state) { }
+        protected override void Update()
+        {
+            base.Update();
+
+            if (Time.Current >= HitObject.StartTime - HitObject.TimePreempt && Time.Current < HitObject.EndTime + HitObject.TimePreempt * 2 && !Loaded)
+                Load();
+            else if (Time.Current < HitObject.StartTime - HitObject.TimePreempt | Time.Current >= HitObject.EndTime + HitObject.TimePreempt * 2 && Loaded)
+                Unload();
+
+            if (Time.Current >= HitObject.StartTime && Time.Current < HitObject.EndTime && !Started)
+                Start();
+            else if (Time.Current < HitObject.StartTime | Time.Current >= HitObject.EndTime && Started)
+                End();
+        }
+
+        protected virtual void Load() { Loaded = true; }
+
+        protected virtual void Start() { Started = true; }
+
+        protected virtual void End() { Started = false; }
+
+        protected virtual void Unload() { Loaded = false; }
     }
 
     public enum ComboResult

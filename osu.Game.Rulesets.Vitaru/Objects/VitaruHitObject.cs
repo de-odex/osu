@@ -10,7 +10,8 @@ namespace osu.Game.Rulesets.Vitaru.Objects
 {
     public abstract class VitaruHitObject : HitObject, IHasComboInformation
     {
-        public float BPM;
+        public double TimePreempt = 600;
+        public double TimeFadein = 400;
 
         public float Ar { get; set; } = -1;
 
@@ -18,15 +19,9 @@ namespace osu.Game.Rulesets.Vitaru.Objects
 
         public Vector2 Position { get; set; }
 
-        public Vector2 StackedPosition => Position;
+        public double EndTime { get; set; }
 
         public virtual Vector2 EndPosition => Position;
-
-        public Vector2 StackedEndPosition => EndPosition;
-
-        public virtual int StackHeight { get; set; }
-
-        public Vector2 StackOffset => new Vector2(0,0);
 
         public float Scale { get; set; } = 1;
 

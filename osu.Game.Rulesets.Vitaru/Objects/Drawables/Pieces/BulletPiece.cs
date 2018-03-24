@@ -58,9 +58,9 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables.Pieces
             if (currentSkin != GraphicsPresets.HighPerformanceCompetitive && currentSkin != GraphicsPresets.HighPerformance && bulletKiai.Alpha > 0)
             {
                 if (randomRotateDirection)
-                    bulletKiai.RotateTo((float)(Clock.CurrentTime / 1000 * 90) * randomRotationValue);
+                    bulletKiai.Rotation += (float)(Clock.ElapsedFrameTime / 1000 * 90) * randomRotationValue;
                 else
-                    bulletKiai.RotateTo((float)(Clock.CurrentTime / 1000 * 90) * -1 * randomRotationValue);
+                    bulletKiai.Rotation += (float)(-Clock.ElapsedFrameTime / 1000 * 90) * randomRotationValue;
             }
         }
 

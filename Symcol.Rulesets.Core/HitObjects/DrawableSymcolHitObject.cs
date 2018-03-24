@@ -14,10 +14,7 @@ namespace Symcol.Rulesets.Core.HitObjects
     public abstract class DrawableSymcolHitObject<TObject> : DrawableHitObject<TObject>
         where TObject : HitObject
     {
-        //Future prep?
-        //public override void ClearTransformsAfter(double time, bool propagateChildren = false, string targetMember = null) { }
-        //public override void ApplyTransformsAt(double time, bool propagateChildren = false) { }
-
+        #region Container
         protected virtual Container<Drawable> Content => new Container();
 
         public IReadOnlyList<Drawable> Children
@@ -73,11 +70,6 @@ namespace Symcol.Rulesets.Core.HitObjects
                 ClearInternal(disposeChildren);
         }
 
-        protected DrawableSymcolHitObject(TObject hitObject)
-    : base(hitObject)
-        {
-        }
-
         public void Add(Drawable drawable)
         {
             AddInternal(drawable);
@@ -87,5 +79,15 @@ namespace Symcol.Rulesets.Core.HitObjects
         {
             RemoveInternal(drawable);
         }
+        #endregion
+
+        protected DrawableSymcolHitObject(TObject hitObject)
+    : base(hitObject)
+        { }
+
+        // Todo: At some point we need to move these to DrawableHitObject after ensuring that all other Rulesets apply
+        // transforms in the same way and don't rely on them not being cleared
+        public override void ClearTransformsAfter(double time, bool propagateChildren = false, string targetMember = null) { }
+        public override void ApplyTransformsAt(double time, bool propagateChildren = false) { }
     }
 }

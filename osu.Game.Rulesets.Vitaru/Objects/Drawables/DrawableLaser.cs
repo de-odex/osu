@@ -41,10 +41,7 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
         private const float fade_in_time = 200;
         private const float fade_out_time = 200;
 
-        private bool started;
-        private bool loaded;
-
-        public DrawableLaser(Container parent, Laser laser, DrawablePattern drawablePattern) : base(laser, parent)
+        public DrawableLaser(Laser laser, DrawablePattern drawablePattern, VitaruPlayfield playfield) : base(laser, playfield)
         {
             AlwaysPresent = true;
             Alpha = 0;
@@ -59,7 +56,7 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
             Rotation = MathHelper.RadiansToDegrees(Laser.LaserAngleRadian);
         }
 
-        public DrawableLaser(Container parent, Laser laser) : base(laser, parent)
+        public DrawableLaser(Laser laser, VitaruPlayfield playfield) : base(laser, playfield)
         {
             AlwaysPresent = true;
             Alpha = 0;
@@ -71,78 +68,6 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
 
             Size = new Vector2(Laser.LaserSize.X / 2, Laser.LaserSize.Y / 8);
             Rotation = MathHelper.RadiansToDegrees(Laser.LaserAngleRadian);
-        }
-
-        /// <summary>
-        /// Called 1 second before the bullet's starttime
-        /// </summary>
-        private void load()
-        {
-            if (!loaded)
-            {
-                loaded = true;
-
-                Children = new Drawable[]
-                {
-                    laserPiece = new LaserPiece(this),
-                    Hitbox = new SymcolHitbox(new Vector2(Laser.LaserSize.X / 2, Laser.LaserSize.Y / 8), Shape.Rectangle)
-                    {
-                        Team = Laser.Team,
-                        HitDetection = false
-                    }
-                };
-            }
-        }
-
-        /// <summary>
-        /// Called to unload the bullet for storage
-        /// </summary>
-        private void unload()
-        {
-            if (loaded)
-            {
-                loaded = false;
-                started = false;
-                returnJudgement = false;
-                LaserDeleteTime = -1;
-                Alpha = 0;
-
-                Remove(laserPiece);
-                laserPiece.Dispose();
-                Remove(Hitbox);
-                Hitbox.Dispose();
-                ParentContainer.Remove(this);
-                Dispose();
-            }
-        }
-
-        /// <summary>
-        /// Called once when the bullet starts
-        /// </summary>
-        private void start()
-        {
-            if (!started)
-            {
-                Hitbox.HitDetection = true;
-                started = true;
-                this.FadeInFromZero(fade_in_time);
-                this.ResizeTo(Laser.LaserSize, fade_in_time);
-                laserPiece.ResizeTo(Laser.LaserSize, fade_in_time);
-                Hitbox.ResizeTo(Laser.LaserSize, fade_in_time);
-            }
-        }
-
-        public void End()
-        {
-            if (started)
-            {
-                started = false;
-                this.FadeOutFromOne(fade_out_time);
-                this.ResizeTo(new Vector2(Laser.LaserSize.X / 2, Laser.LaserSize.Y), fade_out_time);
-                laserPiece.ResizeTo(new Vector2(Laser.LaserSize.X / 2, Laser.LaserSize.Y), fade_out_time);
-                Hitbox.ResizeTo(new Vector2(Laser.LaserSize.X / 2, Laser.LaserSize.Y), fade_out_time);
-                LaserDeleteTime = Time.Current + fade_out_time;
-            }
         }
 
         protected override void CheckForJudgements(bool userTriggered, double timeOffset)
@@ -220,25 +145,7 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Drawables
             else if (ReturnGreat)
             {
                 AddJudgement(new VitaruJudgement { Result = HitResult.Great });
-                unload();
             }
-        }
-
-        protected override void Update()
-        {
-            base.Update();
-
-            if (Time.Current >= Laser.StartTime | Laser.DummyMode)
-                load();
-
-            if (LaserDeleteTime <= Time.Current && LaserDeleteTime != -1 || Time.Current < Laser.StartTime && !Laser.DummyMode)
-                unload();
-
-            if (Time.Current >= Laser.StartTime && Time.Current < Laser.EndTime)
-                start();
-
-            if (Time.Current >= Laser.EndTime)
-                End();
         }
     }
 }
