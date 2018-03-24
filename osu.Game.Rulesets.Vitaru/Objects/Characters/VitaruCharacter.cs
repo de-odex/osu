@@ -12,7 +12,6 @@ using osu.Framework.Graphics.Shapes;
 using osu.Framework.Extensions.Color4Extensions;
 using Container = osu.Framework.Graphics.Containers.Container;
 using Symcol.Core.GameObjects;
-using System.ComponentModel;
 using osu.Framework.Platform;
 
 namespace osu.Game.Rulesets.Vitaru.Objects.Characters
@@ -238,9 +237,9 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Characters
                     Anchor = Anchor.Centre,
                     Origin = Anchor.Centre,
                     Alpha = 0,
-                    Size = new Vector2(HitboxWidth),
+                    Size = new Vector2(HitboxWidth + HitboxWidth / 4),
                     BorderColour = CharacterColor,
-                    BorderThickness = HitboxWidth / 3,
+                    BorderThickness = HitboxWidth / 4,
                     Masking = true,
 
                     Child = new Box
@@ -250,7 +249,7 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Characters
                     EdgeEffect = new EdgeEffectParameters
                     {
                         
-                        Radius = HitboxWidth,
+                        Radius = HitboxWidth / 2,
                         Type = EdgeEffectType.Shadow,
                         Colour = CharacterColor.Opacity(0.5f)
                     }

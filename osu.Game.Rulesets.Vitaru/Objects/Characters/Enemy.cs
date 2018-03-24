@@ -27,15 +27,15 @@ namespace osu.Game.Rulesets.Vitaru.Objects.Characters
             CharacterName = "enemy";
             Team = 1;
             CharacterColor = drawablePattern.AccentColour;
-            HitboxWidth = 27;
+            HitboxWidth = 48;
         }
 
         protected override void LoadComplete()
         {
             EnemyCount++;
 
-            if (currentSkin == GraphicsPresets.StandardCompetitive)
-                VisibleHitbox.Alpha = 0.2f;
+            if (currentSkin == GraphicsPresets.StandardCompetitive | currentSkin == GraphicsPresets.HighPerformanceCompetitive)
+                VisibleHitbox.Alpha = 0.5f;
         }
 
         protected override void Dispose(bool isDisposing)
